@@ -1,0 +1,25 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "ba231c202a4ffcd944c7fa7c685a529c764b0105313004e482cdcc3e6b098509"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.7"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "dbispipeline": {
+            "git": "ssh://git@git.uibk.ac.at/dbis/software/dbispipeline",
+            "ref": "800735124020393b9e343a9bd9c8eed9775fd426"
+        }
+    },
+    "develop": {}
+}
