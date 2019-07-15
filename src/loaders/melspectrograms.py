@@ -44,7 +44,6 @@ class MelSpectrogramsLoader(TrainTestLoader):
         """Returns the train data."""
         return self._load_set(self.training_path)
 
-    @abstractmethod
     def load_test(self):
         """Returns the test data."""
         return self._load_set(self.test_path)
