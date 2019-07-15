@@ -22,8 +22,8 @@ class MelSpectrogramsLoader(TrainTestLoader):
         # Process every song in the given set.
         with open(self.training_path, "r") as f:
             lines = f.readlines()
-            for line in lines:
-                fields = lines.split("\t")
+            for line in lines[1:]:
+                fields = line.split("\t")
 
                 npy_path = fields[3].replace(".mp3", ".npy")
                 tags = [t.replace("\n", "") for t in fields[5:]]

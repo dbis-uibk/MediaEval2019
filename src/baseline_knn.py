@@ -23,7 +23,6 @@ evaluator = FixedSplitGridEvaluator(
         'scoring': 'f1_micro',
         'verbose': 1,
         'n_jobs': 1,
-        'cv': 2,
         'iid': True,
     }
 )
