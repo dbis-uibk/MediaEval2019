@@ -1,35 +1,27 @@
 from dbispipeline.base import TrainTestLoader
-from os import path
 import numpy as np
+import pickle
+import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 
-class MelSpectrogramsLoader(TrainTestLoader):
+class LibRosaLoader(TrainTestLoader):
     """
-    Loads the mel-spectrograms provided by the task organizers and the labels 
-    for both the training and test set.
+    Loads librosa features and labels for both the training and test set.
     """
 
-    def __init__(self, training_path, test_path, data_path):
+    def __init__(self, training_path, test_path):
         self.training_path = training_path
         self.test_path = test_path
-        self.data_path = data_path
         self.mlb = None
 
     def _load_set(self, set_path):
         X = []
         y = []
 
-        # Process every song in the given set.
-        with open(set_path, "r") as f:
-            lines = f.readlines()
-            for line in lines[1:]:
-                fields = line.split("\t")
-
-                npy_path = fields[3].replace(".mp3", ".npy")
-                tags = [t.replace("\n", "") for t in fields[5:]]
-                
-                X.append(np.load(path.join(self.data_path, npy_path)))
-                y.append(tags)
+        # Load pickled data frame.
+        frame = pickle.load(open(set_path, "rb"))
+        X = frame[frame.columns[:-1]].values
+        y = frame["tags"].values
 
         # Binarize labels.
         if self.mlb is None:
@@ -38,7 +30,7 @@ class MelSpectrogramsLoader(TrainTestLoader):
         else:
             y = self.mlb.transform(y)
 
-        return np.array(X), np.array(y)
+        return X, y
 
     def load_train(self):
         """Returns the train data."""
