@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "67bb659291cc5e048ed1a3b90c44e7637f4298a66c41f2c41254c52e7bd07fe1"
+            "sha256": "216e79060ea5ff80360b911e69fb903fbe6d49e61460487e16cf0605b635572c"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.7"
+            "python_version": "3.6"
         },
         "sources": [
             {
@@ -57,7 +57,7 @@
         },
         "dbispipeline": {
             "git": "ssh://git@git.uibk.ac.at/dbis/software/dbispipeline",
-            "ref": "60e0252abe6020ad964dfb4878df59b8278df14f"
+            "ref": "0315dbf0b8b36b3f1ede0e5f3be04bbb27b20b48"
         },
         "decorator": {
             "hashes": [
