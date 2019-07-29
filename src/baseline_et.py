@@ -2,9 +2,8 @@ from loaders.librosa_features import LibRosaLoader
 import dbispipeline.result_handlers as result_handlers
 from dbispipeline.evaluators import FixedSplitGridEvaluator
 from sklearn.pipeline import Pipeline
-from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import ExtraTreesClassifier
 
 dataloader = LibRosaLoader(
     "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train-librosa.pickle", 
@@ -13,13 +12,14 @@ dataloader = LibRosaLoader(
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
-    ("classifier", MultiOutputClassifier(SVC()))
+    ("classifier", ExtraTreesClassifier())
 ])
 
 evaluator = FixedSplitGridEvaluator(
     {
         # these parameters will all be tested by gridsearch.
-        "classifier__estimator__C": [0.1, 1.0, 10.0]
+        "classifier__n_estimators": [5, 10, 25, 100],       
+        "classifier__class_weight": [None, "balanced"]
     },
     {
         'scoring': ['f1_micro', 'f1_macro', 'roc_auc'],

@@ -28,8 +28,8 @@ def extract_features(song_path):
     spec_rolloff_stddev = np.std(librosa.feature.spectral_rolloff(y=song, sr=sr)[0])
 
     # Extract spectral flatness.
-    spec_flat = np.mean(librosa.feature.spectral_flatness(y=song, sr=sr)[0])
-    spec_flat_stddev = np.std(librosa.feature.spectral_flatness(y=song, sr=sr)[0])
+    spec_flat = np.mean(librosa.feature.spectral_flatness(y=song)[0])
+    spec_flat_stddev = np.std(librosa.feature.spectral_flatness(y=song)[0])
 
     # Extract spectral contrast.
     spec_contrast = np.mean(librosa.feature.spectral_contrast(y=song, sr=sr)[0])

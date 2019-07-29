@@ -21,10 +21,11 @@ evaluator = FixedSplitGridEvaluator(
         "classifier__n_neighbors": [1, 3, 5, 10],
     },
     {
-        'scoring': 'f1_micro',
-        'verbose': 1,
+        'scoring': ['f1_micro', 'f1_macro', 'roc_auc'],
+        'verbose': 100,
         'n_jobs': 1,
         'iid': True,
+        'refit': True
     }
 )
 
