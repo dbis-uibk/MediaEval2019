@@ -13,16 +13,16 @@ dataloader = LibRosaLoader(
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
-    ("classifier", MultiOutputClassifier(SVC()))
+    ("model", MultiOutputClassifier(SVC()))
 ])
 
 evaluator = FixedSplitGridEvaluator(
     {
         # these parameters will all be tested by gridsearch.
-        "classifier__estimator__C": [0.1, 1.0, 10.0]
+        "model__estimator__C": [0.1, 1.0, 10.0]
     },
     {
-        'scoring': ['f1_micro', 'f1_macro', 'roc_auc'],
+        'scoring': ['f1_micro', 'f1_macro', 'roc_auc', 'average_precision'],
         'verbose': 100,
         'n_jobs': 1,
         'iid': True,

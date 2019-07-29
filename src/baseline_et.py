@@ -12,17 +12,17 @@ dataloader = LibRosaLoader(
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
-    ("classifier", ExtraTreesClassifier())
+    ("model", ExtraTreesClassifier())
 ])
 
 evaluator = FixedSplitGridEvaluator(
     {
         # these parameters will all be tested by gridsearch.
-        "classifier__n_estimators": [5, 10, 25, 100],       
-        "classifier__class_weight": [None, "balanced"]
+        "model__n_estimators": [5, 10, 25, 100],
+        "model__class_weight": [None, "balanced"]
     },
     {
-        'scoring': ['f1_micro', 'f1_macro', 'roc_auc'],
+        'scoring': ['f1_micro', 'f1_macro', 'roc_auc', 'average_precision'],
         'verbose': 100,
         'n_jobs': 1,
         'iid': True,

@@ -12,16 +12,16 @@ dataloader = LibRosaLoader(
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
-    ("classifier", KNeighborsClassifier())
+    ("model", KNeighborsClassifier())
 ])
 
 evaluator = FixedSplitGridEvaluator(
     {
         # these parameters will all be tested by gridsearch.
-        "classifier__n_neighbors": [1, 3, 5, 10],
+        "model__n_neighbors": [1, 3, 5, 10],
     },
     {
-        'scoring': ['f1_micro', 'f1_macro', 'roc_auc'],
+        'scoring': ['f1_micro', 'f1_macro', 'roc_auc', 'average_precision'],
         'verbose': 100,
         'n_jobs': 1,
         'iid': True,
