@@ -26,6 +26,7 @@ evaluator = FixedSplitGridEvaluator(
         'verbose': 100,
         'n_jobs': 1,
         'iid': True,
+        'refit': False,
     }
 )
 
