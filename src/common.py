@@ -11,7 +11,7 @@ def grid_params():
             'recall_macro',
         ],
         'verbose': 100,
-        'n_jobs': 1,
+        'n_jobs': -1,
         'iid': True,
         'refit': False,
     }
