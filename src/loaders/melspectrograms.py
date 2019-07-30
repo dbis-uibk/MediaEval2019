@@ -3,6 +3,7 @@ from os import path
 import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 
+
 class MelSpectrogramsLoader(TrainTestLoader):
     """
     Loads the mel-spectrograms provided by the task organizers and the labels 
@@ -60,4 +61,3 @@ class MelSpectrogramsLoader(TrainTestLoader):
         This is for storing its state in the database.
         """
         return {}
-

@@ -4,6 +4,7 @@ import pickle
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 
+
 class LibRosaLoader(TrainTestLoader):
     """
     Loads librosa features and labels for both the training and test set.
@@ -47,4 +48,3 @@ class LibRosaLoader(TrainTestLoader):
         This is for storing its state in the database.
         """
         return {}
-

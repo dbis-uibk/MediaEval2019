@@ -4,6 +4,16 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+yapf = "*"
+flake8 = "*"
+flake8-deprecated = "*"
+flake8-import-order = "*"
+flake8-bugbear = "*"
+flake8-builtins = "*"
+flake8-commas = "*"
+bandit = "*"
+pylint = "*"
+flake8-docstrings = "*"
 
 [packages]
 dbispipeline = {git = "ssh://git@git.uibk.ac.at/dbis/software/dbispipeline"}
