@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 dbispipeline = {git = "ssh://git@git.uibk.ac.at/dbis/software/dbispipeline"}
 librosa = "*"
+keras = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.6"

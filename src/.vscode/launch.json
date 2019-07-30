@@ -31,7 +31,7 @@
             "module": "dbispipeline",
             "args": [
                 "-f",
-                "baseline_svm.py"
+                "approach_crnn.py"
             ],
             "console": "integratedTerminal"
         },

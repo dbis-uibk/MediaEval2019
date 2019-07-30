@@ -9,10 +9,11 @@ class MelSpectrogramsLoader(TrainTestLoader):
     for both the training and test set.
     """
 
-    def __init__(self, training_path, test_path, data_path):
+    def __init__(self, training_path, test_path, data_path, center_sample=True):
         self.training_path = training_path
         self.test_path = test_path
         self.data_path = data_path
+        self.center_sample = center_sample
         self.mlb = None
 
     def _load_set(self, set_path):
@@ -28,7 +29,11 @@ class MelSpectrogramsLoader(TrainTestLoader):
                 npy_path = fields[3].replace(".mp3", ".npy")
                 tags = [t.replace("\n", "") for t in fields[5:]]
                 
-                X.append(np.load(path.join(self.data_path, npy_path)))
+                X_temp = np.load(path.join(self.data_path, npy_path))
+                start_idx = int(X_temp.shape[1] / 2 - 683)
+                X_temp = X_temp[:, start_idx:(start_idx + 1366)]
+
+                X.append(X_temp)
                 y.append(tags)
 
         # Binarize labels.
