@@ -9,6 +9,7 @@ class LibRosaLoader(TrainTestLoader):
     """
     Loads librosa features and labels for both the training and test set.
     """
+
     def __init__(self, training_path, test_path):
         self.training_path = training_path
         self.test_path = test_path

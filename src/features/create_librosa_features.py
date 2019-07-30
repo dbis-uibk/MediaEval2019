@@ -21,8 +21,7 @@ def extract_features(song_path):
     zcr = sum(librosa.zero_crossings(y=song)) / len(song)
 
     # Extract spectral centroid.
-    spec_centroid = np.mean(
-        librosa.feature.spectral_centroid(y=song, sr=sr)[0])
+    spec_centroid = np.mean(librosa.feature.spectral_centroid(y=song, sr=sr)[0])
     spec_centroid_stddev = np.std(
         librosa.feature.spectral_centroid(y=song, sr=sr)[0])
 
@@ -36,8 +35,7 @@ def extract_features(song_path):
     spec_flat_stddev = np.std(librosa.feature.spectral_flatness(y=song)[0])
 
     # Extract spectral contrast.
-    spec_contrast = np.mean(
-        librosa.feature.spectral_contrast(y=song, sr=sr)[0])
+    spec_contrast = np.mean(librosa.feature.spectral_contrast(y=song, sr=sr)[0])
     spec_contrast_stddev = np.std(
         librosa.feature.spectral_contrast(y=song, sr=sr)[0])
 

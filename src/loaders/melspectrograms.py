@@ -9,6 +9,7 @@ class MelSpectrogramsLoader(TrainTestLoader):
     Loads the mel-spectrograms provided by the task organizers and the labels 
     for both the training and test set.
     """
+
     def __init__(self, training_path, test_path, data_path):
         self.training_path = training_path
         self.test_path = test_path
