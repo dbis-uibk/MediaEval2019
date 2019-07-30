@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c43f2bfe4c1abbeddeb4920d6a5c6c4e4386336effe5ad8c75389e220de8583e"
+            "sha256": "3ac15f43f230bc15938baa715699c1a751b5a7f43249764068f53340adf2d55c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -248,12 +248,6 @@
             "index": "pypi",
             "version": "==1.6.2"
         },
-        "docutils": {
-            "hashes": [
-                "sha256:f33ddb723332c6d6b6d99731ee1fc0c35eb4044a2df5cca1c64c8aa78eaf22cb"
-            ],
-            "version": "==0.15.1.post1"
-        },
         "entrypoints": {
             "hashes": [
                 "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19",
@@ -323,13 +317,6 @@
                 "sha256:e44b087597f6da52ec6393a709e7108b2905317d0c0b744cdca6208e670d8eda"
             ],
             "version": "==1.0.2"
-        },
-        "flake8-rst-docstrings": {
-            "hashes": [
-                "sha256:009c278460394d7f5a88c9e4da91962e1b7cd6a351913c2c2947b873a4887625"
-            ],
-            "index": "pypi",
-            "version": "==0.0.10"
         },
         "gitdb2": {
             "hashes": [
@@ -432,12 +419,6 @@
                 "sha256:fe6a88094b64132c4bb3b631412e90032e8cfe9745a58370462240b8cb7553cd"
             ],
             "version": "==5.1.1"
-        },
-        "restructuredtext-lint": {
-            "hashes": [
-                "sha256:97b3da356d5b3a8514d8f1f9098febd8b41463bed6a1d9f126cf0a048b6fd908"
-            ],
-            "version": "==1.3.0"
         },
         "six": {
             "hashes": [
