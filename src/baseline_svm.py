@@ -13,7 +13,7 @@ dataloader = LibRosaLoader(
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
-    ("model", MultiOutputClassifier(SVC()))
+    ("model", MultiOutputClassifier(SVC(probability=True)))
 ])
 
 evaluator = FixedSplitGridEvaluator(
