@@ -19,8 +19,8 @@ pipeline = Pipeline([
 evaluator = FixedSplitGridEvaluator(
     {
         # these parameters will all be tested by gridsearch.
-        "model__num_filters": [50],
-        "model__epochs": [2],
+        "model__num_filters": [25, 50],
+        "model__epochs": [2, 10, 20],
     },
     {
         'scoring': ['f1_micro', 'f1_macro'],
