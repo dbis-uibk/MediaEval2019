@@ -6,14 +6,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import ExtraTreesClassifier
 
 dataloader = LibRosaLoader(
-    "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train-librosa.pickle", 
+    "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train-librosa.pickle",
     "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-test-librosa.pickle"
 )
 
-pipeline = Pipeline([
-    ("scaler", StandardScaler()),
-    ("model", ExtraTreesClassifier())
-])
+pipeline = Pipeline([("scaler", StandardScaler()),
+                     ("model", ExtraTreesClassifier())])
 
 evaluator = FixedSplitGridEvaluator(
     {
@@ -27,10 +25,8 @@ evaluator = FixedSplitGridEvaluator(
         'n_jobs': 1,
         'iid': True,
         'refit': False,
-    }
-)
+    })
 
 result_handlers = [
     result_handlers.print_gridsearch_results,
 ]
-

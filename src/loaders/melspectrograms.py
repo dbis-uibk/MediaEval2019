@@ -3,12 +3,12 @@ from os import path
 import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 
+
 class MelSpectrogramsLoader(TrainTestLoader):
     """
     Loads the mel-spectrograms provided by the task organizers and the labels 
     for both the training and test set.
     """
-
     def __init__(self, training_path, test_path, data_path):
         self.training_path = training_path
         self.test_path = test_path
@@ -27,7 +27,7 @@ class MelSpectrogramsLoader(TrainTestLoader):
 
                 npy_path = fields[3].replace(".mp3", ".npy")
                 tags = [t.replace("\n", "") for t in fields[5:]]
-                
+
                 X.append(np.load(path.join(self.data_path, npy_path)))
                 y.append(tags)
 
@@ -55,4 +55,3 @@ class MelSpectrogramsLoader(TrainTestLoader):
         This is for storing its state in the database.
         """
         return {}
-
