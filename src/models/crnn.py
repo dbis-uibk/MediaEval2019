@@ -24,13 +24,11 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
     def _create_model(self, input_shape, output_shape):
         channel_axis = 3
-        freq_axis = 1
 
         melgram_input = Input(shape=input_shape, dtype="float32")
 
         # Input block
         hidden = ZeroPadding2D(padding=(0, 37))(melgram_input)
-        hidden = BatchNormalization(axis=freq_axis, name='bn_0_freq')(hidden)
 
         # Conv block 1
         hidden = Conv2D(64, (3, 3), padding='same', name='conv1')(hidden)
