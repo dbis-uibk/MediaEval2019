@@ -1,3 +1,5 @@
+import common
+
 import dbispipeline.result_handlers as result_handlers
 from dbispipeline.evaluators import FixedSplitGridEvaluator
 
@@ -14,17 +16,14 @@ dataloader = MelSpectrogramsLoader(
 
 pipeline = Pipeline([("model", CRNNModel())])
 
+grid_params = common.grid_params()
+grid_params['n_jobs'] = 1
+
 evaluator = FixedSplitGridEvaluator(
     params={
         "model__epochs": [2, 4, 8, 16, 32, 64],
     },
-    grid_params={
-        'scoring': ['f1_micro', 'f1_macro'],
-        'verbose': 100,
-        'n_jobs': 1,
-        'iid': True,
-        'refit': False,
-    },
+    grid_params=grid_params,
 )
 
 result_handlers = [
