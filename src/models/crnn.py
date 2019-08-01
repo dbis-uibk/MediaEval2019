@@ -1,47 +1,89 @@
-from sklearn.base import BaseEstimator, ClassifierMixin
-from keras.models import Model
-from keras.layers import Input, GRU, Dense, Conv2D, MaxPooling2D, Reshape
 import numpy as np
+
+from sklearn.base import BaseEstimator, ClassifierMixin
+
+from tensorflow.keras.layers import (BatchNormalization, Conv2D, Dense,
+                                     Dropout, ELU, GRU, Input, MaxPooling2D,
+                                     Reshape, ZeroPadding2D)
+from tensorflow.keras.models import Model
 
 
 class CRNNModel(BaseEstimator, ClassifierMixin):
+
     def __init__(self, batch_size=64, epochs=100, num_filters=100):
         self.batch_size = batch_size
         self.epochs = epochs
         self.num_filters = num_filters
 
-
     def fit(self, X, y):
-        ########## Reshape data ##########
-        X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
+        input_shape = (96, 1366, 1)
+        output_shape = y.shape[1]
+        self._create_model(input_shape, output_shape)
 
-        ########## Build the model ##########
-        model_input = Input(shape=(96, 1366, 1), dtype="float32")
-
-        cnn1 = Conv2D(self.num_filters, (3, 3))(model_input)
-        pool1 = MaxPooling2D((2, 2))(cnn1)
-
-        cnn2 = Conv2D(self.num_filters, (3, 3))(pool1)
-        pool2 = MaxPooling2D((3, 3))(cnn2)
-
-        cnn3 = Conv2D(self.num_filters, (3, 3))(pool2)
-        pool3 = MaxPooling2D((4, 4))(cnn3)
-
-        cnn4 = Conv2D(self.num_filters, (3, 3))(pool3)
-        rsh1 = Reshape((54, self.num_filters))(cnn4)
-
-        rnn1 = GRU(self.num_filters, return_sequences=True)(rsh1)
-        rnn2 = GRU(self.num_filters)(rnn1)
-
-        output = Dense(y.shape[1], activation="softmax")(rnn2)
-
-        self.model = Model(inputs=model_input, outputs=output)
-        self.model.compile(optimizer="adam", loss="binary_crossentropy", metrics=['accuracy'])
-        self.model.summary()
-
-        ########## Train the model ##########
+        X = X.reshape(X.shape[0], *input_shape)
         self.model.fit(X, y, batch_size=self.batch_size, epochs=self.epochs)
 
+    def _create_model(self, input_shape, output_shape):
+        channel_axis = 3
+        freq_axis = 1
+
+        melgram_input = Input(shape=input_shape, dtype="float32")
+
+        # Input block
+        hidden = ZeroPadding2D(padding=(0, 37))(melgram_input)
+        hidden = BatchNormalization(axis=freq_axis, name='bn_0_freq')(hidden)
+
+        # Conv block 1
+        hidden = Conv2D(64, 3, 3, border_mode='same', name='conv1')(hidden)
+        hidden = BatchNormalization(axis=channel_axis, mode=0,
+                                    name='bn1')(hidden)
+        hidden = ELU()(hidden)
+        hidden = MaxPooling2D(pool_size=(2, 2), strides=(2, 2),
+                              name='pool1')(hidden)
+        hidden = Dropout(0.1, name='dropout1')(hidden)
+
+        # Conv block 2
+        hidden = Conv2D(128, 3, 3, border_mode='same', name='conv2')(hidden)
+        hidden = BatchNormalization(axis=channel_axis, mode=0,
+                                    name='bn2')(hidden)
+        hidden = ELU()(hidden)
+        hidden = MaxPooling2D(pool_size=(3, 3), strides=(3, 3),
+                              name='pool2')(hidden)
+        hidden = Dropout(0.1, name='dropout2')(hidden)
+
+        # Conv block 3
+        hidden = Conv2D(128, 3, 3, border_mode='same', name='conv3')(hidden)
+        hidden = BatchNormalization(axis=channel_axis, mode=0,
+                                    name='bn3')(hidden)
+        hidden = ELU()(hidden)
+        hidden = MaxPooling2D(pool_size=(4, 4), strides=(4, 4),
+                              name='pool3')(hidden)
+        hidden = Dropout(0.1, name='dropout3')(hidden)
+
+        # Conv block 4
+        hidden = Conv2D(128, 3, 3, border_mode='same', name='conv4')(hidden)
+        hidden = BatchNormalization(axis=channel_axis, mode=0,
+                                    name='bn4')(hidden)
+        hidden = ELU()(hidden)
+        hidden = MaxPooling2D(pool_size=(4, 4), strides=(4, 4),
+                              name='pool4')(hidden)
+        hidden = Dropout(0.1, name='dropout4')(hidden)
+
+        # reshaping
+        hidden = Reshape((15, 128))(hidden)
+
+        # GRU block 1, 2, output
+        hidden = GRU(32, return_sequences=True, name='gru1')(hidden)
+        hidden = GRU(32, return_sequences=False, name='gru2')(hidden)
+        hidden = Dropout(0.3)(hidden)
+        output = Dense(output_shape, activation='sigmoid',
+                       name='output')(hidden)
+
+        self.model = Model(inputs=melgram_input, outputs=output)
+        self.model.compile(optimizer="adam",
+                           loss="binary_crossentropy",
+                           metrics=['accuracy'])
+        self.model.summary()
 
     def predict(self, X):
         X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)

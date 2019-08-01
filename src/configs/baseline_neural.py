@@ -16,8 +16,7 @@ dataloader = LibRosaLoader(
     MEDIAEVAL_PATH + "/autotagging_moodtheme-test-librosa.pickle",
 )
 
-pipeline = Pipeline([("scaler", StandardScaler()),
-                     ("model", MLPClassifier())])
+pipeline = Pipeline([("scaler", StandardScaler()), ("model", MLPClassifier())])
 
 evaluator = FixedSplitGridEvaluator(
     params={},

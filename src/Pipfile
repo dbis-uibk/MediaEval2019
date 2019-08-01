@@ -17,8 +17,7 @@ pylint = "*"
 [packages]
 dbispipeline = {git = "ssh://git@git.uibk.ac.at/dbis/software/dbispipeline"}
 librosa = "*"
-keras = "*"
-tensorflow = "*"
+tensorflow = "==1.14.0"
 
 [requires]
 python_version = "3.6"
