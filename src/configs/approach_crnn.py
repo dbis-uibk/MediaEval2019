@@ -16,7 +16,7 @@ pipeline = Pipeline([("model", CRNNModel())])
 
 evaluator = FixedSplitGridEvaluator(
     params={
-        "model__epochs": [2],
+        "model__epochs": [2, 4, 8, 16, 32, 64],
     },
     grid_params={
         'scoring': ['f1_micro', 'f1_macro'],
