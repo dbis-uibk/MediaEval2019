@@ -13,7 +13,6 @@ flake8-builtins = "*"
 flake8-commas = "*"
 bandit = "*"
 pylint = "*"
-flake8-docstrings = "*"
 
 [packages]
 dbispipeline = {git = "ssh://git@git.uibk.ac.at/dbis/software/dbispipeline"}
