@@ -34,8 +34,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
         # Conv block 1
         hidden = Conv2D(64, 3, 3, name='conv1')(hidden)
-        hidden = BatchNormalization(axis=channel_axis, mode=0,
-                                    name='bn1')(hidden)
+        hidden = BatchNormalization(axis=channel_axis, name='bn1')(hidden)
         hidden = ELU()(hidden)
         hidden = MaxPooling2D(pool_size=(2, 2), strides=(2, 2),
                               name='pool1')(hidden)
@@ -43,8 +42,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
         # Conv block 2
         hidden = Conv2D(128, 3, 3, name='conv2')(hidden)
-        hidden = BatchNormalization(axis=channel_axis, mode=0,
-                                    name='bn2')(hidden)
+        hidden = BatchNormalization(axis=channel_axis, name='bn2')(hidden)
         hidden = ELU()(hidden)
         hidden = MaxPooling2D(pool_size=(3, 3), strides=(3, 3),
                               name='pool2')(hidden)
@@ -52,8 +50,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
         # Conv block 3
         hidden = Conv2D(128, 3, 3, name='conv3')(hidden)
-        hidden = BatchNormalization(axis=channel_axis, mode=0,
-                                    name='bn3')(hidden)
+        hidden = BatchNormalization(axis=channel_axis, name='bn3')(hidden)
         hidden = ELU()(hidden)
         hidden = MaxPooling2D(pool_size=(4, 4), strides=(4, 4),
                               name='pool3')(hidden)
@@ -61,8 +58,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
         # Conv block 4
         hidden = Conv2D(128, 3, 3, name='conv4')(hidden)
-        hidden = BatchNormalization(axis=channel_axis, mode=0,
-                                    name='bn4')(hidden)
+        hidden = BatchNormalization(axis=channel_axis, name='bn4')(hidden)
         hidden = ELU()(hidden)
         hidden = MaxPooling2D(pool_size=(4, 4), strides=(4, 4),
                               name='pool4')(hidden)
