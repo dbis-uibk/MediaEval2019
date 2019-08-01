@@ -15,18 +15,17 @@ dataloader = MelSpectrogramsLoader(
 pipeline = Pipeline([("model", CRNNModel())])
 
 evaluator = FixedSplitGridEvaluator(
-    {
-        # these parameters will all be tested by gridsearch.
-        "model__num_filters": [25, 50],
+    params={
         "model__epochs": [2, 10, 20],
     },
-    {
+    grid_params={
         'scoring': ['f1_micro', 'f1_macro'],
         'verbose': 100,
         'n_jobs': 1,
         'iid': True,
         'refit': False,
-    })
+    },
+)
 
 result_handlers = [
     result_handlers.print_gridsearch_results,

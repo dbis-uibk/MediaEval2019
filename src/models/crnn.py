@@ -10,10 +10,9 @@ from tensorflow.keras.models import Model
 
 class CRNNModel(BaseEstimator, ClassifierMixin):
 
-    def __init__(self, batch_size=64, epochs=100, num_filters=100):
+    def __init__(self, batch_size=64, epochs=100):
         self.batch_size = batch_size
         self.epochs = epochs
-        self.num_filters = num_filters
 
     def fit(self, X, y):
         input_shape = (96, 1366, 1)
@@ -34,7 +33,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = BatchNormalization(axis=freq_axis, name='bn_0_freq')(hidden)
 
         # Conv block 1
-        hidden = Conv2D(64, 3, 3, border_mode='same', name='conv1')(hidden)
+        hidden = Conv2D(64, 3, 3, name='conv1')(hidden)
         hidden = BatchNormalization(axis=channel_axis, mode=0,
                                     name='bn1')(hidden)
         hidden = ELU()(hidden)
@@ -43,7 +42,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = Dropout(0.1, name='dropout1')(hidden)
 
         # Conv block 2
-        hidden = Conv2D(128, 3, 3, border_mode='same', name='conv2')(hidden)
+        hidden = Conv2D(128, 3, 3, name='conv2')(hidden)
         hidden = BatchNormalization(axis=channel_axis, mode=0,
                                     name='bn2')(hidden)
         hidden = ELU()(hidden)
@@ -52,7 +51,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = Dropout(0.1, name='dropout2')(hidden)
 
         # Conv block 3
-        hidden = Conv2D(128, 3, 3, border_mode='same', name='conv3')(hidden)
+        hidden = Conv2D(128, 3, 3, name='conv3')(hidden)
         hidden = BatchNormalization(axis=channel_axis, mode=0,
                                     name='bn3')(hidden)
         hidden = ELU()(hidden)
@@ -61,7 +60,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = Dropout(0.1, name='dropout3')(hidden)
 
         # Conv block 4
-        hidden = Conv2D(128, 3, 3, border_mode='same', name='conv4')(hidden)
+        hidden = Conv2D(128, 3, 3, name='conv4')(hidden)
         hidden = BatchNormalization(axis=channel_axis, mode=0,
                                     name='bn4')(hidden)
         hidden = ELU()(hidden)
