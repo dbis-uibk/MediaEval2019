@@ -33,23 +33,17 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
             self.validate(*self.dataloader.load_validate())
 
     def validate(self, X, y):
+        X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
         y_pred = self.model.predict(X)
         threshold = []
         for label_idx in range(y_pred.shape[1]):
             fpr, tpr, thresholds = roc_curve(y[..., label_idx],
                                              y_pred[..., label_idx])
-
-            current_fpr = 1.0
-            current_tpr = 0.0
-            i = 0
-
-            while (fpr[i] <= current_fpr) and (tpr >= current_tpr) and (
-                    i < len(thresholds)):
-                current_fpr = fpr[i]
-                current_tpr = tpr[i]
-                i += 1
-
-            threshold.append(thresholds[i - 1])
+            print(tpr)
+            idx = np.where(tpr == tpr[-1])
+            print(idx)
+            print(type(idx))
+            threshold.append(thresholds[idx[0]])
 
         self.threshold = np.array(threshold)
 
@@ -115,8 +109,8 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
     def predict(self, X):
         X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
         predictions = self.model.predict(X)
-        labels = np.zeros(predictions.shape)
-        labels[np.greater(predictions, self.threshold)] = 1
+        print(self.threshold)
+        labels = np.greater(predictions, self.threshold)
 
         return labels
 
