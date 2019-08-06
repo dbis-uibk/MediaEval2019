@@ -39,11 +39,12 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         for label_idx in range(y_pred.shape[1]):
             fpr, tpr, thresholds = roc_curve(y[..., label_idx],
                                              y_pred[..., label_idx])
-            print(tpr)
-            idx = np.where(tpr == tpr[-1])
-            print(idx)
-            print(type(idx))
-            threshold.append(thresholds[idx[0]])
+            idx = np.where(tpr == tpr[-1])[0]
+
+            if len(idx):
+                threshold.append(thresholds[idx[0]])
+            else:
+                threshold.append(0.5)
 
         self.threshold = np.array(threshold)
 
@@ -109,7 +110,6 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
     def predict(self, X):
         X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
         predictions = self.model.predict(X)
-        print(self.threshold)
         labels = np.greater(predictions, self.threshold)
 
         return labels
