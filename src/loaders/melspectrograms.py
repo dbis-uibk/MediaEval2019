@@ -1,12 +1,17 @@
-from dbispipeline.base import TrainTestLoader
 from os import path
+
+from dbispipeline.base import TrainTestLoader
+
 import numpy as np
+
 from sklearn.preprocessing import MultiLabelBinarizer
+
+from . import utils
 
 
 class MelSpectrogramsLoader(TrainTestLoader):
     """
-    Loads the mel-spectrograms provided by the task organizers and the labels 
+    Loads the mel-spectrograms provided by the task organizers and the labels
     for both the training and test set.
     """
 
@@ -15,37 +20,36 @@ class MelSpectrogramsLoader(TrainTestLoader):
         self.training_path = training_path
         self.test_path = test_path
         self.data_path = data_path
+        # FIXME: this flag is unused
         self.center_sample = center_sample
-        self.mlb = None
+        self.mlb = MultiLabelBinarizer()
+        self.mlb_fit = True
 
     def _load_set(self, set_path):
-        X = []
-        y = []
+        sample_set = utils.load_set_info(set_path)[['PATH', 'TAGS']]
+        X = self._load_data(sample_set)
 
-        # Process every song in the given set.
-        with open(set_path, "r") as f:
-            lines = f.readlines()
-            for line in lines[1:]:
-                fields = line.split("\t")
-
-                npy_path = fields[3].replace(".mp3", ".npy")
-                tags = [t.replace("\n", "") for t in fields[5:]]
-
-                X_temp = np.load(path.join(self.data_path, npy_path))
-                start_idx = int(X_temp.shape[1] / 2 - 683)
-                X_temp = X_temp[:, start_idx:(start_idx + 1366)]
-
-                X.append(X_temp)
-                y.append(tags)
-
-        # Binarize labels.
-        if self.mlb is None:
-            self.mlb = MultiLabelBinarizer()
-            y = self.mlb.fit_transform(y)
+        # TODO: Remove workaround
+        if self.mlb_fit:
+            y = self.mlb.fit_transform(sample_set['TAGS'])
+            self.mlb_fit = False
         else:
-            y = self.mlb.transform(y)
+            y = self.mlb.transform(sample_set['TAGS'])
 
-        return np.array(X), np.array(y)
+        return X, y
+
+    def _load_data(self, sample_set):
+        X = []
+
+        for sample in sample_set['PATH']:
+            sample_path = sample.replace('.mp3', '.npy')
+            X_temp = np.load(path.join(self.data_path, sample_path))
+            start_idx = int(X_temp.shape[1] / 2 - 683)
+            X_temp = X_temp[:, start_idx:(start_idx + 1366)]
+
+            X.append(X_temp)
+
+        return np.array(X)
 
     def load_train(self):
         """Returns the train data."""
@@ -61,4 +65,9 @@ class MelSpectrogramsLoader(TrainTestLoader):
 
         This is for storing its state in the database.
         """
-        return {}
+        return {
+            'training_path': self.training_path,
+            'test_path': self.test_path,
+            'data_path': self.data_path,
+            'center_sample': self.center_sample,
+        }
