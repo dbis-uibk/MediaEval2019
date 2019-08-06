@@ -1,6 +1,8 @@
 import numpy as np
 
 from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.metrics import roc_curve
+from sklearn.metrics import auc
 
 from tensorflow.keras.layers import (BatchNormalization, Conv2D, Dense,
                                      Dropout, ELU, GRU, Input, MaxPooling2D,
@@ -10,9 +12,11 @@ from tensorflow.keras.models import Model
 
 class CRNNModel(BaseEstimator, ClassifierMixin):
 
-    def __init__(self, batch_size=64, epochs=100):
+    def __init__(self, batch_size=64, epochs=100, padding='same', dataloader=None):
         self.batch_size = batch_size
         self.epochs = epochs
+        self.padding = padding
+        self.dataloader = dataloader
 
     def fit(self, X, y):
         input_shape = (96, 1366, 1)
@@ -21,6 +25,28 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
         X = X.reshape(X.shape[0], *input_shape)
         self.model.fit(X, y, batch_size=self.batch_size, epochs=self.epochs)
+
+        if self.dataloader:
+            self.validate(*self.dataloader.load_validate())
+
+    def validate(self, X, y):
+        y_pred = self.model.predict(X)
+        threshold = []
+        for label_idx in range(y_pred.shape[1]):
+            fpr, tpr, thresholds = roc_curve(y[..., 1], y_pred[..., 1])
+
+            current_fpr = 1.0
+            current_tpr = 0.0
+            i = 0
+
+            while (fpr[i] <= current_fpr) and (tpr >= current_tpr) and (i < len(thresholds)):
+                current_fpr = fpr[i]
+                current_tpr = tpr[i]
+                i += 1
+
+            threshold.append(thresholds[i - 1])
+
+        self.threshold = np.array(threshold)
 
     def _create_model(self, input_shape, output_shape):
         channel_axis = 3
@@ -31,7 +57,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = ZeroPadding2D(padding=(0, 37))(melgram_input)
 
         # Conv block 1
-        hidden = Conv2D(64, (3, 3), padding='same', name='conv1')(hidden)
+        hidden = Conv2D(64, (3, 3), padding=self.padding, name='conv1')(hidden)
         hidden = BatchNormalization(axis=channel_axis, name='bn1')(hidden)
         hidden = ELU()(hidden)
         hidden = MaxPooling2D(pool_size=(2, 2), strides=(2, 2),
@@ -39,7 +65,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = Dropout(0.1, name='dropout1')(hidden)
 
         # Conv block 2
-        hidden = Conv2D(128, (3, 3), padding='same', name='conv2')(hidden)
+        hidden = Conv2D(128, (3, 3), padding=self.padding, name='conv2')(hidden)
         hidden = BatchNormalization(axis=channel_axis, name='bn2')(hidden)
         hidden = ELU()(hidden)
         hidden = MaxPooling2D(pool_size=(3, 3), strides=(3, 3),
@@ -47,7 +73,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = Dropout(0.1, name='dropout2')(hidden)
 
         # Conv block 3
-        hidden = Conv2D(128, (3, 3), padding='same', name='conv3')(hidden)
+        hidden = Conv2D(128, (3, 3), padding=self.padding, name='conv3')(hidden)
         hidden = BatchNormalization(axis=channel_axis, name='bn3')(hidden)
         hidden = ELU()(hidden)
         hidden = MaxPooling2D(pool_size=(4, 4), strides=(4, 4),
@@ -55,7 +81,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = Dropout(0.1, name='dropout3')(hidden)
 
         # Conv block 4
-        hidden = Conv2D(128, (3, 3), padding='same', name='conv4')(hidden)
+        hidden = Conv2D(128, (3, 3), padding=self.padding, name='conv4')(hidden)
         hidden = BatchNormalization(axis=channel_axis, name='bn4')(hidden)
         hidden = ELU()(hidden)
         hidden = MaxPooling2D(pool_size=(4, 4), strides=(4, 4),
@@ -82,7 +108,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
         predictions = self.model.predict(X)
         labels = np.zeros(predictions.shape)
-        labels[predictions > 0.5] = 1
+        labels[np.greater(predictions, self.threshold)] = 1
 
         return labels
 

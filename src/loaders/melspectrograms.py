@@ -1,6 +1,6 @@
 from os import path
 
-from dbispipeline.base import TrainTestLoader
+from dbispipeline.base import TrainValidateTestLoader
 
 import numpy as np
 
@@ -9,16 +9,17 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from . import utils
 
 
-class MelSpectrogramsLoader(TrainTestLoader):
+class MelSpectrogramsLoader(TrainValidateTestLoader):
     """
     Loads the mel-spectrograms provided by the task organizers and the labels
     for both the training and test set.
     """
 
-    def __init__(self, training_path, test_path, data_path,
+    def __init__(self, training_path, validate_path, test_path, data_path,
                  center_sample=True):
         self.training_path = training_path
         self.test_path = test_path
+        self.validate_path = validate_path
         self.data_path = data_path
         # FIXME: this flag is unused
         self.center_sample = center_sample
@@ -55,6 +56,10 @@ class MelSpectrogramsLoader(TrainTestLoader):
         """Returns the train data."""
         return self._load_set(self.training_path)
 
+    def load_validate(self):
+        """Returns the validate data."""
+        return self._load_set(self.validate_path)
+
     def load_test(self):
         """Returns the test data."""
         return self._load_set(self.test_path)
@@ -67,6 +72,7 @@ class MelSpectrogramsLoader(TrainTestLoader):
         """
         return {
             'training_path': self.training_path,
+            'validate_path': self.validate_path,
             'test_path': self.test_path,
             'data_path': self.data_path,
             'center_sample': self.center_sample,
