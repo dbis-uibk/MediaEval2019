@@ -7,14 +7,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 
 dataloader = MelSpectrogramsLoader(
-    "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train.tsv", 
+    "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train.tsv",
     "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-test.tsv",
-    "/storage/nas3/datasets/music/mediaeval2019/melspec_data"
-)
+    "/storage/nas3/datasets/music/mediaeval2019/melspec_data")
 
-pipeline = Pipeline([
-    ("model", CRNNModel())
-])
+pipeline = Pipeline([("model", CRNNModel())])
 
 evaluator = FixedSplitGridEvaluator(
     {
@@ -28,10 +25,8 @@ evaluator = FixedSplitGridEvaluator(
         'n_jobs': 1,
         'iid': True,
         'refit': False,
-    }
-)
+    })
 
 result_handlers = [
     result_handlers.print_gridsearch_results,
 ]
-

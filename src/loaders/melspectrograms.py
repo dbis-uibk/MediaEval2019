@@ -15,7 +15,11 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
     for both the training and test set.
     """
 
-    def __init__(self, training_path, validate_path, test_path, data_path,
+    def __init__(self,
+                 training_path,
+                 validate_path,
+                 test_path,
+                 data_path,
                  center_sample=True):
         self.training_path = training_path
         self.test_path = test_path
