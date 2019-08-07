@@ -2,6 +2,7 @@ import numpy as np
 
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import roc_curve
+from sklearn.preprocessing import normalize
 
 from tensorflow.keras.layers import (BatchNormalization, Conv2D, Dense,
                                      Dropout, ELU, GRU, Input, MaxPooling2D,
@@ -39,10 +40,10 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         for label_idx in range(y_pred.shape[1]):
             fpr, tpr, thresholds = roc_curve(y[..., label_idx],
                                              y_pred[..., label_idx])
-            idx = np.where(tpr == tpr[-1])[0]
 
-            if len(idx):
-                threshold.append(thresholds[idx[0]])
+            idx = find_elbow(tpr, fpr)
+            if idx >= 0:
+                threshold.append(thresholds[idx])
             else:
                 threshold.append(0.5)
 
@@ -117,3 +118,25 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
     def predict_proba(self, X):
         X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
         return self.model.predict(X)
+
+
+def find_elbow(x_values, y_values):
+    origin = (x_values[0], y_values[0])
+    baseline_vec = np.subtract((x_values[-1], y_values[-1]), origin)
+    baseline_vec = (-baseline_vec[1], baseline_vec[0])  # rotate 90 degree
+    baseline_vec = normalize(np.array(baseline_vec).reshape(1, -1))[0]
+
+    idx = -1
+    max_distance = 0
+    for i, point in enumerate(zip(x_values, y_values)):
+        point_vec = np.subtract(point, origin)
+        print(point_vec, baseline_vec)
+        distance = abs(np.dot(point_vec, baseline_vec))
+        print(distance, type(distance))
+        max_distance = max(max_distance, distance)
+
+        if max_distance == distance:
+            idx = i
+
+    return idx
+
