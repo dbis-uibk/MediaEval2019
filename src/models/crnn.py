@@ -1,9 +1,7 @@
 import numpy as np
-
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import roc_curve
 from sklearn.preprocessing import normalize
-
 from tensorflow.keras.layers import (BatchNormalization, Conv2D, Dense,
                                      Dropout, ELU, GRU, Input, MaxPooling2D,
                                      Reshape, ZeroPadding2D)
@@ -137,4 +135,3 @@ def find_elbow(x_values, y_values):
             idx = i
 
     return idx
-
