@@ -130,9 +130,7 @@ def find_elbow(x_values, y_values):
     max_distance = 0
     for i, point in enumerate(zip(x_values, y_values)):
         point_vec = np.subtract(point, origin)
-        print(point_vec, baseline_vec)
         distance = abs(np.dot(point_vec, baseline_vec))
-        print(distance, type(distance))
         max_distance = max(max_distance, distance)
 
         if max_distance == distance:
