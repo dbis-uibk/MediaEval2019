@@ -1,9 +1,7 @@
 import numpy as np
-
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import roc_curve
 from sklearn.preprocessing import normalize
-
 from tensorflow.keras.layers import (BatchNormalization, Conv2D, Dense,
                                      Dropout, ELU, GRU, Input, MaxPooling2D,
                                      Reshape, ZeroPadding2D)
@@ -130,13 +128,10 @@ def find_elbow(x_values, y_values):
     max_distance = 0
     for i, point in enumerate(zip(x_values, y_values)):
         point_vec = np.subtract(point, origin)
-        print(point_vec, baseline_vec)
         distance = abs(np.dot(point_vec, baseline_vec))
-        print(distance, type(distance))
         max_distance = max(max_distance, distance)
 
         if max_distance == distance:
             idx = i
 
     return idx
-
