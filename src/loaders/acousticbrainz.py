@@ -1,27 +1,26 @@
 import json
 from os import path
 
-from dbispipeline.base import TrainTestLoader
-
+from dbispipeline.base import TrainValidateTestLoader
 import pandas as pd
-
 from sklearn.preprocessing import MultiLabelBinarizer
-
+import pickle
 from . import utils
 
 
-class AcousticBrainzLoader(TrainTestLoader):
+class AcousticBrainzLoader(TrainValidateTestLoader):
     """
     Loads the AcousticBrainz features provided by the task organizers and the
     labels for both the training and test set.
     """
 
-    def __init__(self, training_path, test_path, data_path):
+    def __init__(self, training_path, test_path, validation_path):
         self.training_path = training_path
         self.test_path = test_path
-        self.data_path = data_path
+        self.validation_path = validation_path
+
         self.mlb = MultiLabelBinarizer()
-        self.mlb_fit = True
+        self.mlb_fitted = False
 
     def load_train(self):
         """Returns the train data."""
@@ -30,6 +29,10 @@ class AcousticBrainzLoader(TrainTestLoader):
     def load_test(self):
         """Returns the test data."""
         return self._load_set(self.test_path)
+
+    def load_validate(self):
+        """Returns the validation data."""
+        return self._load_set(self.validation_path)
 
     @property
     def configuration(self):
@@ -40,29 +43,21 @@ class AcousticBrainzLoader(TrainTestLoader):
         return {
             'training_path': self.training_path,
             'test_path': self.test_path,
-            'data_path': self.data_path,
+            'validation_path': self.validation_path,
         }
 
     def _load_set(self, set_path):
-        sample_set = utils.load_set_info(set_path)[['PATH', 'TAGS']]
-        X = self._load_data(sample_set)
+        data = pickle.load(open(set_path, "rb"))
+
+        X = data.values[:, 2:]
+        y = data.values[:, 1]
 
         # TODO: Remove workaround
-        if self.mlb_fit:
-            y = self.mlb.fit_transform(sample_set['TAGS'])
-            self.mlb_fit = False
+        if not self.mlb_fitted:
+            y = self.mlb.fit_transform(y)
+            self.mlb_fitted = True
         else:
-            y = self.mlb.transform(sample_set['TAGS'])
+            y = self.mlb.transform(y)
 
         return X, y
 
-    def _load_data(self, sample_set):
-        samples = pd.DataFrame()
-
-        for sample in sample_set['PATH']:
-            sample_path = sample.replace('.mp3', '.json')
-            data = json.load(path.join(self.data_path, sample_path))
-            data = pd.io.json.json_normalize(data)
-            samples.append(data, sort=False, ignore_index=True)
-
-        return samples
