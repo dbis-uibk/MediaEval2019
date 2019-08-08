@@ -31,7 +31,7 @@
             "module": "dbispipeline",
             "args": [
                 "-f",
-                "approach_crnn.py"
+                "./configs/approach_crnn_plus.py"
             ],
             "console": "integratedTerminal"
         },
