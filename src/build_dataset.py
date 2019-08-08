@@ -116,7 +116,7 @@ def create_dataset(chart_file, feature_directory, target_file):
         highlevel_files = glob.glob(f"{base_path}.json.highlevel.json")
 
         # Load features and pack them into dataframes
-        df_meta = pd.DataFrame([[song_id, tags]], columns=["ID", "tags"])
+        df_meta = pd.DataFrame([[song_id, tags]], columns=["#ID", "#tags"])
         df_low = json_normalize(json.load(open(lowlevel_files[0], "r")))
         df_high = json_normalize(json.load(open(highlevel_files[0], "r")))
 
