@@ -8,9 +8,12 @@ from sklearn.pipeline import Pipeline
 
 dataloader = MelSpectrogramsLoader(
     data_path="/storage/nas3/datasets/music/mediaeval2019/melspec_data",
-    training_path="/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train.tsv",  # noqa E501
-    test_path="/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-test.tsv",  # noqa E501
-    validate_path="/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-validation.tsv",  # noqa E501
+    training_path=
+    "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train.tsv",  # noqa E501
+    test_path=
+    "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-test.tsv",  # noqa E501
+    validate_path=
+    "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-validation.tsv",  # noqa E501
 )
 
 pipeline = Pipeline([("model", CRNNModel(dataloader=dataloader))])
