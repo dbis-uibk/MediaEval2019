@@ -29,7 +29,15 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         self.model.fit(X, y, batch_size=self.batch_size, epochs=self.epochs)
 
         if self.dataloader:
-            self.validate(*self.dataloader.load_validate())
+            try:
+                validation_data = self.dataloader.load_validate()
+            except (NotImplementedError, AttributeError):
+                validation_data = None
+
+            if validation_data:
+                self.validate(*validation_data)
+            else:
+                self.threshold(np.full(output_shape, .5))
 
     def validate(self, X, y):
         X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
@@ -38,8 +46,12 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         for label_idx in range(y_pred.shape[1]):
             fpr, tpr, thresholds = roc_curve(y[..., label_idx],
                                              y_pred[..., label_idx])
+            try:
+                idx = find_elbow(tpr, fpr)
+            except ValueError as ex:
+                print(ex)
+                idx = -1
 
-            idx = find_elbow(tpr, fpr)
             if idx >= 0:
                 threshold.append(thresholds[idx])
             else:

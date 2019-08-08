@@ -16,10 +16,10 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
     """
 
     def __init__(self,
-                 training_path,
-                 validate_path,
-                 test_path,
                  data_path,
+                 training_path,
+                 test_path,
+                 validate_path=None,
                  center_sample=True):
         self.training_path = training_path
         self.test_path = test_path
@@ -62,7 +62,10 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
 
     def load_validate(self):
         """Returns the validate data."""
-        return self._load_set(self.validate_path)
+        if self.validate_path:
+            return self._load_set(self.validate_path)
+        else:
+            raise NotImplementedError()
 
     def load_test(self):
         """Returns the test data."""
