@@ -65,7 +65,8 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         melgram_input = Input(shape=input_shape, dtype="float32")
 
         # Input block
-        hidden = ZeroPadding2D(padding=(0, 37))(melgram_input)
+        # hidden = ZeroPadding2D(padding=(0, 37))(melgram_input)
+        hidden = melgram_input
 
         # Conv block 1
         hidden = Conv2D(64, (3, 3), padding=self.padding, name='conv1')(hidden)
