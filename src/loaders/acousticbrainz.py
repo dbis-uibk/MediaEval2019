@@ -88,4 +88,3 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
             y = self.mlb.transform(y)
 
         return X, y
-

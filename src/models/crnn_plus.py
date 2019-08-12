@@ -9,6 +9,7 @@ from tensorflow.keras.models import Model
 
 
 class CRNNPlusModel(BaseEstimator, ClassifierMixin):
+
     def __init__(self,
                  batch_size=64,
                  epochs=100,
@@ -32,7 +33,10 @@ class CRNNPlusModel(BaseEstimator, ClassifierMixin):
         self._create_model(input_shape, input_essentia_shape, output_shape)
 
         X = X.reshape(X.shape[0], *input_shape)
-        self.model.fit([X, X_essentia], y, batch_size=self.batch_size, epochs=self.epochs)
+        self.model.fit([X, X_essentia],
+                       y,
+                       batch_size=self.batch_size,
+                       epochs=self.epochs)
 
         if self.dataloader:
             try:
@@ -129,7 +133,8 @@ class CRNNPlusModel(BaseEstimator, ClassifierMixin):
         output = Dense(output_shape, activation='sigmoid',
                        name='output')(dense)
 
-        self.model = Model(inputs=[melgram_input, essentia_input], outputs=output)
+        self.model = Model(inputs=[melgram_input, essentia_input],
+                           outputs=output)
         self.model.compile(optimizer="adam",
                            loss="binary_crossentropy",
                            metrics=['accuracy'])
