@@ -21,7 +21,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         self.dataloader = dataloader
 
     def fit(self, X, y):
-        input_shape = (96, 1366, 1)
+        input_shape = (96, 1440, 1)
         output_shape = y.shape[1]
         self._create_model(input_shape, output_shape)
 
