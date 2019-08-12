@@ -1,22 +1,24 @@
 import common
-
-from loaders.acousticbrainz import AcousticBrainzLoader
-
 from dbispipeline.evaluators import FixedSplitGridEvaluator
 import dbispipeline.result_handlers as result_handlers
-
-from sklearn.pipeline import Pipeline
+from dbispipeline.utils import prefix_path
+from loaders.acousticbrainz import AcousticBrainzLoader
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 dataloader = AcousticBrainzLoader(
-    training_path="/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-train.pickle",
-    test_path="/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-test.pickle",
-    validation_path="/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-validation.pickle"
+    training_path=prefix_path("accousticbrainz-train.pickle",
+                              common.DEFAULT_PATH),
+    test_path=prefix_path("accousticbrainz-test.pickle", common.DEFAULT_PATH),
+    validation_path=prefix_path("accousticbrainz-validation.pickle",
+                                common.DEFAULT_PATH),
 )
 
-pipeline = Pipeline([("scaler", StandardScaler()),
-                     ("model", KNeighborsClassifier())])
+pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("model", KNeighborsClassifier()),
+])
 
 evaluator = FixedSplitGridEvaluator(
     params={

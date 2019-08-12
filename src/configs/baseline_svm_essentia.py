@@ -1,23 +1,25 @@
 import common
-
-from loaders.acousticbrainz import AcousticBrainzLoader
-
 from dbispipeline.evaluators import FixedSplitGridEvaluator
 import dbispipeline.result_handlers as result_handlers
-
-from sklearn.pipeline import Pipeline
-from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
+from dbispipeline.utils import prefix_path
+from loaders.acousticbrainz import AcousticBrainzLoader
 from sklearn.multioutput import MultiOutputClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 dataloader = AcousticBrainzLoader(
-    training_path="/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-train.pickle",
-    test_path="/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-test.pickle",
-    validation_path="/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-validation.pickle"
+    training_path=prefix_path("accousticbrainz-train.pickle",
+                              common.DEFAULT_PATH),
+    test_path=prefix_path("accousticbrainz-test.pickle", common.DEFAULT_PATH),
+    validation_path=prefix_path("accousticbrainz-validation.pickle",
+                                common.DEFAULT_PATH),
 )
 
-pipeline = Pipeline([("scaler", StandardScaler()),
-                     ("model", MultiOutputClassifier(SVC(probability=True)))])
+pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("model", MultiOutputClassifier(SVC(probability=True))),
+])
 
 evaluator = FixedSplitGridEvaluator(
     params={"model__estimator__C": [0.1, 1.0, 10.0]},

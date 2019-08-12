@@ -1,11 +1,7 @@
-import json
-from os import path
+import pickle
 
 from dbispipeline.base import TrainValidateTestLoader
-import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
-import pickle
-from . import utils
 
 
 class AcousticBrainzLoader(TrainValidateTestLoader):

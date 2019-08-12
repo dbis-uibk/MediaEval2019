@@ -1,7 +1,10 @@
-import os
 import glob
 import json
+import os
 import pickle
+
+import common
+from dbispipeline.utils import prefix_path
 import pandas as pd
 from pandas.io.json import json_normalize
 
@@ -146,8 +149,7 @@ def create_dataset(chart_file, feature_directory, target_file):
     # Drop other unneeded columns.
     df = df.drop(list(
         filter(lambda x: x.startswith("metadata"), df.columns.values)),
-                 axis=1)  # Metadata
-
+                 axis=1)
     df = df.drop(list(filter(lambda x: x.endswith("dmean"),
                              df.columns.values)),
                  axis=1)
@@ -164,8 +166,10 @@ def create_dataset(chart_file, feature_directory, target_file):
 
     # One-hot encode string features.
     string_columns = [
-        'tonal.chords_key', 'tonal.chords_scale', 'tonal.key_scale',
-        'tonal.key_key'
+        'tonal.chords_key',
+        'tonal.chords_scale',
+        'tonal.key_scale',
+        'tonal.key_key',
     ]
     for c in string_columns:
         dummies = pd.get_dummies(df[c], prefix=c, drop_first=False)
@@ -177,17 +181,18 @@ def create_dataset(chart_file, feature_directory, target_file):
 
 if __name__ == "__main__":
     create_dataset(
-        "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train.tsv",
-        "/storage/nas3/datasets/music/mediaeval2019/acousticbrainz_data",
-        "/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-train.pickle"
+        prefix_path("autotagging_moodtheme-train.tsv", common.DEFAULT_PATH),
+        prefix_path("acousticbrainz_data", common.DEFAULT_PATH),
+        prefix_path("accousticbrainz-train.pickle", common.DEFAULT_PATH),
     )
     create_dataset(
-        "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-test.tsv",
-        "/storage/nas3/datasets/music/mediaeval2019/acousticbrainz_data",
-        "/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-test.pickle"
+        prefix_path("autotagging_moodtheme-test.tsv", common.DEFAULT_PATH),
+        prefix_path("acousticbrainz_data", common.DEFAULT_PATH),
+        prefix_path("accousticbrainz-test.pickle", common.DEFAULT_PATH),
     )
     create_dataset(
-        "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-validation.tsv",
-        "/storage/nas3/datasets/music/mediaeval2019/acousticbrainz_data",
-        "/storage/nas3/datasets/music/mediaeval2019/accousticbrainz-validation.pickle"
+        prefix_path("autotagging_moodtheme-validation.tsv",
+                    common.DEFAULT_PATH),
+        prefix_path("acousticbrainz_data", common.DEFAULT_PATH),
+        prefix_path("accousticbrainz-validation.pickle", common.DEFAULT_PATH),
     )

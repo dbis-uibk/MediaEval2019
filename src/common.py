@@ -1,3 +1,6 @@
+DEFAULT_PATH = '/storage/nas3/datasets/music/mediaeval2019'
+
+
 def grid_params():
     return {
         'scoring': [

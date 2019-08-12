@@ -1,13 +1,15 @@
 # Create a data set using features extracted by librosa.
-
-from os import path
-import librosa
-import pandas as pd
-import numpy as np
-import pickle
 import multiprocessing
+from os import path
+import pickle
 
-data_path = "/storage/nas3/datasets/music/mediaeval2019/audio_data"
+import common
+from dbispipeline.utils import prefix_path
+import librosa
+import numpy as np
+import pandas as pd
+
+DATA_PATH = prefix_path("audio_data", common.DEFAULT_PATH)
 
 
 def extract_features(song_path):
@@ -47,16 +49,30 @@ def extract_features(song_path):
 
     # Done.
     features = [
-        bpm, zcr, spec_centroid, spec_centroid_stddev, spec_rolloff,
-        spec_rolloff_stddev, spec_flat, spec_flat_stddev, spec_contrast,
-        spec_contrast_stddev
+        bpm,
+        zcr,
+        spec_centroid,
+        spec_centroid_stddev,
+        spec_rolloff,
+        spec_rolloff_stddev,
+        spec_flat,
+        spec_flat_stddev,
+        spec_contrast,
+        spec_contrast_stddev,
     ]
     for c in mfcc:
         features.append(c)
     columns = [
-        "bpm", "zcr", "spectral_centroid", "spectral_centroid_stddev",
-        "spectral_rolloff", "spectral_rolloff_std", "spectral_flatness",
-        "spectral_flatness_std", "spectral_contrast", "spectral_contrast_std"
+        "bpm",
+        "zcr",
+        "spectral_centroid",
+        "spectral_centroid_stddev",
+        "spectral_rolloff",
+        "spectral_rolloff_std",
+        "spectral_flatness",
+        "spectral_flatness_std",
+        "spectral_contrast",
+        "spectral_contrast_std",
     ]
     for i in range(len(mfcc)):
         columns.append(f"mfcc{i + 1}")
@@ -70,7 +86,7 @@ def process_line(line):
 
     # Get audio path and tags for the current song.
     fields = line.split("\t")
-    mp3_path = path.join(data_path, fields[3])
+    mp3_path = path.join(DATA_PATH, fields[3])
     tags = [t.replace("\n", "") for t in fields[5:]]
 
     # Extract audio features for the given song.
@@ -101,10 +117,12 @@ def generate_data_set(set_path, save_path):
 
 if __name__ == "__main__":
     generate_data_set(
-        "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train.tsv",
-        "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-train-librosa.pickle"
+        prefix_path("autotagging_moodtheme-train.tsv", common.DEFAULT_PATH),
+        prefix_path("autotagging_moodtheme-train-librosa.pickle",
+                    common.DEFAULT_PATH),
     )
     generate_data_set(
-        "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-test.tsv",
-        "/storage/nas3/datasets/music/mediaeval2019/autotagging_moodtheme-test-librosa.pickle"
+        prefix_path("autotagging_moodtheme-test.tsv", common.DEFAULT_PATH),
+        prefix_path("autotagging_moodtheme-test-librosa.pickle",
+                    common.DEFAULT_PATH),
     )

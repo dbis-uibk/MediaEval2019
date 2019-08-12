@@ -1,20 +1,18 @@
 import common
-
-from loaders.librosa_features import LibRosaLoader
-
 from dbispipeline.evaluators import FixedSplitGridEvaluator
 import dbispipeline.result_handlers as result_handlers
-
-from sklearn.pipeline import Pipeline
-from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
+from dbispipeline.utils import prefix_path
+from loaders.librosa_features import LibRosaLoader
 from sklearn.multioutput import MultiOutputClassifier
-
-MEDIAEVAL_PATH = "/storage/nas3/datasets/music/mediaeval2019"
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 dataloader = LibRosaLoader(
-    MEDIAEVAL_PATH + "/autotagging_moodtheme-train-librosa.pickle",
-    MEDIAEVAL_PATH + "/autotagging_moodtheme-test-librosa.pickle",
+    prefix_path("autotagging_moodtheme-train-librosa.pickle",
+                common.DEFAULT_PATH),
+    prefix_path("autotagging_moodtheme-test-librosa.pickle",
+                common.DEFAULT_PATH),
 )
 
 pipeline = Pipeline([("scaler", StandardScaler()),
