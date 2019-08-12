@@ -21,7 +21,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         self.dataloader = dataloader
 
     def fit(self, X, y):
-        input_shape = (96, 1440, 1)
+        input_shape = (96, 1366, 1)
         output_shape = y.shape[1]
         self._create_model(input_shape, output_shape)
 
@@ -65,8 +65,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         melgram_input = Input(shape=input_shape, dtype="float32")
 
         # Input block
-        # hidden = ZeroPadding2D(padding=(0, 37))(melgram_input)
-        hidden = melgram_input
+        hidden = ZeroPadding2D(padding=(0, 37))(melgram_input)
 
         # Conv block 1
         hidden = Conv2D(64, (3, 3), padding=self.padding, name='conv1')(hidden)
