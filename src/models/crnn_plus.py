@@ -123,7 +123,7 @@ class CRNNPlusModel(BaseEstimator, ClassifierMixin):
         # GRU block 1, 2, output
         hidden = GRU(32, return_sequences=True, name='gru1')(hidden)
         hidden = GRU(32, return_sequences=False, name='gru2')(hidden)
-        hidden = Dropout(0.3)(hidden)
+        # hidden = Dropout(0.3)(hidden)
 
         # Concatenate GRU output with Essentia input
         concat = Concatenate()([hidden, essentia_input])
