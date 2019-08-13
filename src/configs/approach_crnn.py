@@ -14,6 +14,8 @@ dataloader = MelSpectrogramsLoader(
                           common.DEFAULT_PATH),
     validate_path=prefix_path("autotagging_moodtheme-validation.tsv",
                               common.DEFAULT_PATH),
+    window='random',
+    num_windows=5,
 )
 
 pipeline = Pipeline([("model", CRNNModel(dataloader=dataloader))])
@@ -23,7 +25,7 @@ grid_params['n_jobs'] = 1
 
 evaluator = FixedSplitGridEvaluator(
     params={
-        "model__epochs": [2, 4, 8, 16, 32],
+        "model__epochs": [2, 4],
         "model__output_dropout": [None],
     },
     grid_params=grid_params,
