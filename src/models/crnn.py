@@ -7,6 +7,8 @@ from tensorflow.keras.layers import (BatchNormalization, Conv2D, Dense,
                                      Reshape, ZeroPadding2D)
 from tensorflow.keras.models import Model
 
+from .utils import cached_model_predict
+
 
 class CRNNModel(BaseEstimator, ClassifierMixin):
 
@@ -29,6 +31,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
         X = X.reshape(X.shape[0], *input_shape)
         self.model.fit(X, y, batch_size=self.batch_size, epochs=self.epochs)
+        cached_model_predict.clear_cache()
 
         if self.dataloader:
             try:
@@ -122,15 +125,14 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         self.model.summary()
 
     def predict(self, X):
-        X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
-        predictions = self.model.predict(X)
+        predictions = self.predict_proba(X)
         labels = np.greater(predictions, self.threshold)
 
         return labels
 
     def predict_proba(self, X):
         X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
-        return self.model.predict(X)
+        return cached_model_predict(self.model, X)
 
 
 def find_elbow(x_values, y_values):
