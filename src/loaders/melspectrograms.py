@@ -48,7 +48,7 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
         X = []
         y = []
 
-        for sample in sample_set.iterrows():
+        for _, sample in sample_set.iterrows():
             sample_path = sample['PATH'].replace('.mp3', '.npy')
             sample_data = np.load(path.join(self.data_path, sample_path))
 
