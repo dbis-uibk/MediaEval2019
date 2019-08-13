@@ -1,5 +1,4 @@
 from os import path
-from random import randrange
 
 from dbispipeline.base import TrainValidateTestLoader
 import numpy as np
@@ -53,27 +52,14 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
             sample_path = sample['PATH'].replace('.mp3', '.npy')
             sample_data = np.load(path.join(self.data_path, sample_path))
 
-            sample_data = self._get_window(sample_data)
+            sample_data = utils.get_windows(sample=sample_data,
+                                            window=self.window,
+                                            window_size=self.window_size,
+                                            num_windows=self.num_windows)
             X.extend(sample_data)
             y.extend([sample['TAGS']] * self.num_windows)
 
         return np.array(X), np.array(y)
-
-    def _get_window(self, sample):
-        windows = []
-        for i in range(self.num_windows):
-            if self.window == 'center':
-                start_idx = int((sample.shape[1] - self.window_size) / 2)
-            elif self.window == 'random':
-                start_idx = randrange(sample.shape[1] - self.window_size)
-            elif self.window == 'sliding':
-                step = (sample.shape[1] - self.window_size) / self.num_windows
-                start_idx = step * i
-
-            end_idx = start_idx + self.window_size
-            windows.append(sample[:, start_idx:end_idx])
-
-        return windows
 
     def load_train(self):
         """Returns the train data."""
@@ -103,4 +89,5 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
             'data_path': self.data_path,
             'window': self.window,
             'window_size': self.window_size,
+            'num_windows': self.num_windows,
         }
