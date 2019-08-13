@@ -15,12 +15,14 @@ class CRNNPlusModel(BaseEstimator, ClassifierMixin):
                  epochs=100,
                  padding='same',
                  dataloader=None,
-                 essentia_loader=None):
+                 essentia_loader=None,
+                 output_dropout=0.3):
         self.batch_size = batch_size
         self.epochs = epochs
         self.padding = padding
         self.dataloader = dataloader
         self.essentia_loader = essentia_loader
+        self.output_dropout = output_dropout
 
     def fit(self, X, y):
         # Get Essentia features.
@@ -123,7 +125,8 @@ class CRNNPlusModel(BaseEstimator, ClassifierMixin):
         # GRU block 1, 2, output
         hidden = GRU(32, return_sequences=True, name='gru1')(hidden)
         hidden = GRU(32, return_sequences=False, name='gru2')(hidden)
-        # hidden = Dropout(0.3)(hidden)
+        if self.output_dropout:
+            hidden = Dropout(self.output_dropout)(hidden)
 
         # Concatenate GRU output with Essentia input
         concat = Concatenate()([hidden, essentia_input])

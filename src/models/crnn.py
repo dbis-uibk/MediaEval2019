@@ -14,11 +14,13 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
                  batch_size=64,
                  epochs=100,
                  padding='same',
-                 dataloader=None):
+                 dataloader=None,
+                 output_dropout=0.3):
         self.batch_size = batch_size
         self.epochs = epochs
         self.padding = padding
         self.dataloader = dataloader
+        self.output_dropout = output_dropout
 
     def fit(self, X, y):
         input_shape = (96, 1366, 1)
@@ -108,6 +110,8 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         # GRU block 1, 2, output
         hidden = GRU(32, return_sequences=True, name='gru1')(hidden)
         hidden = GRU(32, return_sequences=False, name='gru2')(hidden)
+        if self.output_dropout:
+            hidden = Dropout(self.output_dropout)(hidden)
         output = Dense(output_shape, activation='sigmoid',
                        name='output')(hidden)
 

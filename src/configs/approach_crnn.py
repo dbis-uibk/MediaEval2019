@@ -23,7 +23,8 @@ grid_params['n_jobs'] = 1
 
 evaluator = FixedSplitGridEvaluator(
     params={
-        "model__epochs": [4, 8, 16, 32],
+        "model__epochs": [2, 4, 8, 16, 32],
+        "model__output_dropout": [None],
     },
     grid_params=grid_params,
 )
