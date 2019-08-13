@@ -69,6 +69,14 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         self.threshold = np.array(threshold)
 
     def _create_model(self, input_shape, output_shape):
+        melgram_input, output = self._crnn_layers(input_shape, output_shape)
+        self.model = Model(inputs=melgram_input, outputs=output)
+        self.model.compile(optimizer="adam",
+                           loss="binary_crossentropy",
+                           metrics=['accuracy'])
+        self.model.summary()
+
+    def _crnn_layers(self, input_shape, output_shape):
         channel_axis = 3
 
         melgram_input = Input(shape=input_shape, dtype="float32")
@@ -129,11 +137,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         output = Dense(output_shape, activation='sigmoid',
                        name='output')(hidden)
 
-        self.model = Model(inputs=melgram_input, outputs=output)
-        self.model.compile(optimizer="adam",
-                           loss="binary_crossentropy",
-                           metrics=['accuracy'])
-        self.model.summary()
+        return melgram_input, output
 
     def predict(self, X):
         predictions = self.predict_proba(X)
