@@ -37,10 +37,10 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
 
         # TODO: Remove workaround
         if self.mlb_fit:
-            y = self.mlb.fit_transform(sample_set['TAGS'])
+            y = self.mlb.fit_transform(y)
             self.mlb_fit = False
         else:
-            y = self.mlb.transform(sample_set['TAGS'])
+            y = self.mlb.transform(y)
 
         return X, y
 
@@ -59,7 +59,7 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
             X.extend(sample_data)
             y.extend([sample['TAGS']] * self.num_windows)
 
-        return np.array(X), np.array(y)
+        return np.array(X), y
 
     def load_train(self):
         """Returns the train data."""
