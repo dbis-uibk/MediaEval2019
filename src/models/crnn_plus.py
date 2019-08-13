@@ -132,8 +132,7 @@ class CRNNPlusModel(BaseEstimator, ClassifierMixin):
 
         # Concatenate GRU output with Essentia input
         concat = Concatenate()([hidden, essentia_input])
-        concat = BatchNormalization(axis=channel_axis,
-                                    name='concat_bn')(concat)
+        concat = BatchNormalization(axis=-1, name='concat_bn')(concat)
 
         # Dense
         dense = Dense(128, activation="tanh", name="dense")(concat)
