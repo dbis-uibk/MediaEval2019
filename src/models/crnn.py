@@ -1,13 +1,12 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import roc_curve
-from sklearn.preprocessing import normalize
 from tensorflow.keras.layers import (BatchNormalization, Conv2D, Dense,
                                      Dropout, ELU, GRU, Input, MaxPooling2D,
                                      Reshape, ZeroPadding2D)
 from tensorflow.keras.models import Model
 
-from .utils import cached_model_predict
+from .utils import cached_model_predict, find_elbow
 
 
 class CRNNModel(BaseEstimator, ClassifierMixin):
@@ -133,22 +132,3 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
     def predict_proba(self, X):
         X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
         return cached_model_predict(self.model, X)
-
-
-def find_elbow(x_values, y_values):
-    origin = (x_values[0], y_values[0])
-    baseline_vec = np.subtract((x_values[-1], y_values[-1]), origin)
-    baseline_vec = (-baseline_vec[1], baseline_vec[0])  # rotate 90 degree
-    baseline_vec = normalize(np.array(baseline_vec).reshape(1, -1))[0]
-
-    idx = -1
-    max_distance = 0
-    for i, point in enumerate(zip(x_values, y_values)):
-        point_vec = np.subtract(point, origin)
-        distance = abs(np.dot(point_vec, baseline_vec))
-        max_distance = max(max_distance, distance)
-
-        if max_distance == distance:
-            idx = i
-
-    return idx
