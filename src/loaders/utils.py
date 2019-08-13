@@ -30,7 +30,7 @@ def get_windows(sample, window, window_size, num_windows):
         elif window == 'random':
             start_idx = randrange(sample.shape[1] - window_size)
         elif window == 'sliding':
-            step = (sample.shape[1] - window_size) / num_windows
+            step = int((sample.shape[1] - window_size) / num_windows)
             start_idx = step * i
         else:
             raise ValueError('Unknown window type.')
