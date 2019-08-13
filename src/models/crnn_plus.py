@@ -16,13 +16,15 @@ class CRNNPlusModel(BaseEstimator, ClassifierMixin):
                  padding='same',
                  dataloader=None,
                  essentia_loader=None,
-                 output_dropout=0.3):
+                 crnn_output_dropout=0.3,
+                 concat_bn=False):
         self.batch_size = batch_size
         self.epochs = epochs
         self.padding = padding
         self.dataloader = dataloader
         self.essentia_loader = essentia_loader
-        self.output_dropout = output_dropout
+        self.crnn_output_dropout = crnn_output_dropout
+        self.concat_bn = concat_bn
 
     def fit(self, X, y):
         # Get Essentia features.
@@ -125,11 +127,13 @@ class CRNNPlusModel(BaseEstimator, ClassifierMixin):
         # GRU block 1, 2, output
         hidden = GRU(32, return_sequences=True, name='gru1')(hidden)
         hidden = GRU(32, return_sequences=False, name='gru2')(hidden)
-        if self.output_dropout:
-            hidden = Dropout(self.output_dropout)(hidden)
+        if self.crnn_output_dropout:
+            hidden = Dropout(self.crnn_output_dropout)(hidden)
 
         # Concatenate GRU output with Essentia input
         concat = Concatenate()([hidden, essentia_input])
+        concat = BatchNormalization(axis=channel_axis,
+                                    name='concat_bn')(concat)
 
         # Dense
         dense = Dense(128, activation="tanh", name="dense")(concat)
