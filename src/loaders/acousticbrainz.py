@@ -73,8 +73,8 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
         data = pickle.load(open(set_path, "rb"))
         data = data[self.columns]
 
-        X = data.values[:, 2:]
-        y = data.values[:, 1]
+        X = data.drop(columns=['#ID', '#tags'])
+        y = data['#tags']
 
         # TODO: Remove workaround
         if not self.mlb_fitted:
