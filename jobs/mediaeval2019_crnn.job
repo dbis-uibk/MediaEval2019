@@ -9,6 +9,5 @@
 #SBATCH -e output/slurm.crnn_mediaeval2019.%N.%j.err
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/software-shared/cudnn10-1/lib64:/software-shared/lib-cuda10.0
 
-mkdir -p output  # create output dir if it does not exist
 cd src
 srun pipenv run python -m dbispipeline configs/approach_crnn.py --path=$HOME/mediaeval2019_data
