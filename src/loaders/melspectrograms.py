@@ -31,9 +31,9 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
         self.mlb = MultiLabelBinarizer()
         self.mlb_fit = True
 
-    def _load_set(self, set_path):
+    def _load_set(self, set_path, sub_sampling):
         sample_set = utils.load_set_info(set_path)[['PATH', 'TAGS']]
-        X, y = self._load_data(sample_set)
+        X, y = self._load_data(sample_set, sub_sampling)
 
         # TODO: Remove workaround
         if self.mlb_fit:
@@ -44,7 +44,7 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
 
         return X, y
 
-    def _load_data(self, sample_set):
+    def _load_data(self, sample_set, sub_sampling):
         X = []
         y = []
 
@@ -52,29 +52,37 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
             sample_path = sample['PATH'].replace('.mp3', '.npy')
             sample_data = np.load(path.join(self.data_path, sample_path))
 
-            sample_data = utils.get_windows(sample=sample_data,
-                                            window=self.window,
-                                            window_size=self.window_size,
-                                            num_windows=self.num_windows)
-            X.extend(sample_data)
-            y.extend([sample['TAGS']] * self.num_windows)
+            if sub_sampling:
+                sample_data = utils.get_windows(sample=sample_data,
+                                                window=self.window,
+                                                window_size=self.window_size,
+                                                num_windows=self.num_windows)
+                X.extend(sample_data)
+                y.extend([sample['TAGS']] * self.num_windows)
+            else:
+                center_sample = utils.get_windows(sample=sample_data,
+                                                  window='center',
+                                                  window_size=self.window_size,
+                                                  num_windows=1)
+                X.append(center_sample)
+                y.append(sample['TAGS'])
 
         return np.array(X), y
 
     def load_train(self):
         """Returns the train data."""
-        return self._load_set(self.training_path)
+        return self._load_set(self.training_path, sub_sampling=True)
 
     def load_validate(self):
         """Returns the validate data."""
         if self.validate_path:
-            return self._load_set(self.validate_path)
+            return self._load_set(self.validate_path, sub_sampling=True)
         else:
             raise NotImplementedError()
 
     def load_test(self):
         """Returns the test data."""
-        return self._load_set(self.test_path)
+        return self._load_set(self.test_path, sub_sampling=False)
 
     @property
     def configuration(self):
