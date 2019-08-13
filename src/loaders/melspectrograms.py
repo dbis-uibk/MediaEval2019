@@ -1,3 +1,4 @@
+from random import randrange
 from os import path
 
 from dbispipeline.base import TrainValidateTestLoader
@@ -18,19 +19,22 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
                  training_path,
                  test_path,
                  validate_path=None,
-                 center_sample=True):
+                 window='center',
+                 window_size=1366,
+                 num_windows=1):
         self.training_path = training_path
         self.test_path = test_path
         self.validate_path = validate_path
         self.data_path = data_path
-        # FIXME: this flag is unused
-        self.center_sample = center_sample
+        self.window = window
+        self.window_size = window_size
+        self.num_windows = num_windows
         self.mlb = MultiLabelBinarizer()
         self.mlb_fit = True
 
     def _load_set(self, set_path):
         sample_set = utils.load_set_info(set_path)[['PATH', 'TAGS']]
-        X = self._load_data(sample_set)
+        X, y = self._load_data(sample_set)
 
         # TODO: Remove workaround
         if self.mlb_fit:
@@ -43,16 +47,33 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
 
     def _load_data(self, sample_set):
         X = []
+        y = []
 
-        for sample in sample_set['PATH']:
-            sample_path = sample.replace('.mp3', '.npy')
-            X_temp = np.load(path.join(self.data_path, sample_path))
-            start_idx = int(X_temp.shape[1] / 2 - 683)
-            X_temp = X_temp[:, start_idx:(start_idx + 1366)]
+        for sample in sample_set.iterrows():
+            sample_path = sample['PATH'].replace('.mp3', '.npy')
+            sample_data = np.load(path.join(self.data_path, sample_path))
 
-            X.append(X_temp)
+            sample_data = self._get_window(sample_data)
+            X.extend(sample_data)
+            y.extend([sample['TAGS']] * self.num_windows)
 
-        return np.array(X)
+        return np.array(X), np.array(y)
+
+    def _get_window(self, sample):
+        windows = []
+        for i in range(self.num_windows):
+            if self.window == 'center':
+                start_idx = int((sample.shape[1] - self.window_size) / 2)
+            elif self.window == 'random':
+                start_idx = randrange(sample.shape[1] - self.window_size)
+            elif self.window == 'sliding':
+                step = (sample.shape[1] - self.window_size) / self.num_windows
+                start_idx = step * i
+
+            end_idx = start_idx + self.window_size
+            windows.append(sample[:, start_idx:end_idx])
+
+        return windows
 
     def load_train(self):
         """Returns the train data."""
@@ -80,5 +101,6 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
             'validate_path': self.validate_path,
             'test_path': self.test_path,
             'data_path': self.data_path,
-            'center_sample': self.center_sample,
+            'window': self.window,
+            'window_size': self.window_size,
         }
