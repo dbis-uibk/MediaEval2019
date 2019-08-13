@@ -64,10 +64,10 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
                                                   window='center',
                                                   window_size=self.window_size,
                                                   num_windows=1)
-                X.append(center_sample)
+                X.append(center_sample[0])
                 y.append(sample['TAGS'])
 
-        return np.array(X), y
+        return np.array(X), np.array(y)
 
     def load_train(self):
         """Returns the train data."""
