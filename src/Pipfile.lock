@@ -70,7 +70,7 @@
         },
         "dbispipeline": {
             "git": "ssh://git@git.uibk.ac.at/dbis/software/dbispipeline",
-            "ref": "6964023ded42a400e47e6c3673a1eac05a59858b"
+            "ref": "36ed1982c16001bc988b14cc8791aa560f08e444"
         },
         "decorator": {
             "hashes": [
