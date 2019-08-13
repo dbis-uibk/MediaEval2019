@@ -6,6 +6,8 @@ from loaders.melspectrograms import MelSpectrogramsLoader
 from models.crnn import CRNNModel
 from sklearn.pipeline import Pipeline
 
+WINDOW_SIZE = 1400
+
 dataloader = MelSpectrogramsLoader(
     data_path=prefix_path("melspec_data", common.DEFAULT_PATH),
     training_path=prefix_path("autotagging_moodtheme-train.tsv",
@@ -14,11 +16,14 @@ dataloader = MelSpectrogramsLoader(
                           common.DEFAULT_PATH),
     validate_path=prefix_path("autotagging_moodtheme-validation.tsv",
                               common.DEFAULT_PATH),
-    window='sliding',
+    window='random',
     num_windows=5,
+    window_size=WINDOW_SIZE,
 )
 
-pipeline = Pipeline([("model", CRNNModel(dataloader=dataloader))])
+pipeline = Pipeline([
+    ("model", CRNNModel(dataloader=dataloader, window_size=WINDOW_SIZE)),
+])
 
 grid_params = common.grid_params()
 grid_params['n_jobs'] = 1

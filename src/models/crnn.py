@@ -16,15 +16,20 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
                  epochs=100,
                  padding='same',
                  dataloader=None,
-                 output_dropout=0.3):
+                 output_dropout=0.3,
+                 window_size=1366):
         self.batch_size = batch_size
         self.epochs = epochs
         self.padding = padding
         self.dataloader = dataloader
         self.output_dropout = output_dropout
+        self.network_input_width = 1440
+        if window_size > self.network_input_width:
+            raise ValueError('window_size > ' + str(self.network_input_width))
+        self.window_size = window_size
 
     def fit(self, X, y):
-        input_shape = (96, 1366, 1)
+        input_shape = (96, self.window_size, 1)
         output_shape = y.shape[1]
         self._create_model(input_shape, output_shape)
 
@@ -69,7 +74,14 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         melgram_input = Input(shape=input_shape, dtype="float32")
 
         # Input block
-        hidden = ZeroPadding2D(padding=(0, 37))(melgram_input)
+        padding = self.network_input_width - input_shape[1]
+        left_pad = int(padding / 2)
+        if padding % 2:
+            right_pad = left_pad + 1
+        else:
+            right_pad = left_pad
+        input_padding = ((0, 0), (left_pad, right_pad))
+        hidden = ZeroPadding2D(padding=input_padding)(melgram_input)
 
         # Conv block 1
         hidden = Conv2D(64, (3, 3), padding=self.padding, name='conv1')(hidden)
