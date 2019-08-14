@@ -6,7 +6,7 @@ from tensorflow.keras.layers import (BatchNormalization, Concatenate, Conv2D,
                                      MaxPooling2D, Reshape, ZeroPadding2D)
 from tensorflow.keras.models import Model
 
-from .utils import cached_model_predict, find_elbow
+from .utils import cached_model_predict, cached_model_predict_clear, find_elbow
 
 
 class CRNNModel(BaseEstimator, ClassifierMixin):
@@ -33,9 +33,8 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         output_shape = y.shape[1]
         self._create_model(input_shape, output_shape)
 
-        X = X.reshape(X.shape[0], *input_shape)
         self.model.fit(X, y, batch_size=self.batch_size, epochs=self.epochs)
-        cached_model_predict.cache_clear()
+        cached_model_predict_clear()
 
         if self.dataloader:
             try:
@@ -49,7 +48,6 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
                 self.threshold(np.full(output_shape, .5))
 
     def validate(self, X, y):
-        X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
         y_pred = self.model.predict(X)
         threshold = []
         for label_idx in range(y_pred.shape[1]):
@@ -146,5 +144,4 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         return labels
 
     def predict_proba(self, X):
-        X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
         return cached_model_predict(self.model, X)

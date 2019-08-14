@@ -1,12 +1,19 @@
-from functools import lru_cache
-
 import numpy as np
 from sklearn.preprocessing import normalize
 
+cache = {'X': None, 'y': None}
 
-@lru_cache(maxsize=1)
+
 def cached_model_predict(model, X):
-    return model.predict(X)
+    if not np.array_equal(cache['X'], X):
+        cache['X'] = X
+        cache['y'] = model.predict(X)
+    return cache['y']
+
+
+def cached_model_predict_clear():
+    cache['X'] = None
+    cache['y'] = None
 
 
 def find_elbow(x_values, y_values):
