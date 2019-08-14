@@ -1,9 +1,9 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import roc_curve
-from tensorflow.keras.layers import (BatchNormalization, Conv2D, Dense,
-                                     Dropout, ELU, GRU, Input, MaxPooling2D,
-                                     Reshape, ZeroPadding2D)
+from tensorflow.keras.layers import (BatchNormalization, Concatenate, Conv2D,
+                                     Dense, Dropout, ELU, GRU, Input,
+                                     MaxPooling2D, Reshape, ZeroPadding2D)
 from tensorflow.keras.models import Model
 
 from .utils import cached_model_predict, find_elbow
@@ -35,7 +35,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
         X = X.reshape(X.shape[0], *input_shape)
         self.model.fit(X, y, batch_size=self.batch_size, epochs=self.epochs)
-        cached_model_predict.clear_cache()
+        cached_model_predict.cache_clear()
 
         if self.dataloader:
             try:
