@@ -6,7 +6,7 @@ from loaders.melspectrograms import MelSpectrogramsLoader
 from models.crnn import CRNNModel
 from sklearn.pipeline import Pipeline
 
-WINDOW_SIZE = 1400
+WINDOW_SIZE = 1366
 
 dataloader = MelSpectrogramsLoader(
     data_path=prefix_path("melspec_data", common.DEFAULT_PATH),
