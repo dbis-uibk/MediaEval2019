@@ -25,10 +25,10 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         self.network_input_width = 1440
 
     def fit(self, X, y):
+        X = self._reshape_data(X)
         input_shape, output_shape = self._data_shapes(X, y)
         self._create_model(input_shape, output_shape)
 
-        X = self._reshape_data(X)
         self.model.fit(X, y, batch_size=self.batch_size, epochs=self.epochs)
         cached_model_predict_clear()
 
@@ -173,7 +173,6 @@ class CRNNPlusModel(CRNNModel):
         self.concat_bn = concat_bn
 
     def _data_shapes(self, X, y):
-        X = np.swapaxes(X, 0, 1)
         mel_shape = X[0][0].shape
         ess_shape = X[1][0].shape
 
@@ -186,16 +185,9 @@ class CRNNPlusModel(CRNNModel):
         return input_shape, output_shape
 
     def _reshape_data(self, X):
-        X = np.swapaxes(X, 0, 1)
-        num_samples = len(X[0])
-        mel_shape = X[0][0].shape
-        mel_X = np.vstack(X[0])
-        mel_X = mel_X.reshape((num_samples, *mel_shape))
-        ess_X = np.vstack(X[1])
-        return [mel_X, ess_X]
+        return list(zip(*X))
 
     def _create_model(self, input_shape, output_shape):
-        print(input_shape)
         mel_input, crnn_output = self._crnn_layers(input_shape[0],
                                                    output_shape)
         essentia_input = Input(shape=input_shape[1], dtype="float32")
