@@ -1,0 +1,13 @@
+#!/bin/bash -l
+#SBATCH --partition=IFIall
+#SBATCH --job-name=mediaeval2019-crnn-plus
+#SBATCH --mail-type=ALL
+#SBATCH --account=dbis
+#SBATCH --nodes=1
+#SBATCH --tasks-per-node=1
+#SBATCH -o output/slurm.crnn_mediaeval2019.%N.%j.out
+#SBATCH -e output/slurm.crnn_mediaeval2019.%N.%j.err
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/software-shared/cudnn10-1/lib64:/software-shared/lib-cuda10.0
+
+cd src
+srun pipenv run python -m dbispipeline configs/approach_crnn_plus_new.py --path=$HOME/mediaeval2019_data
