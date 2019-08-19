@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import normalize
 
-
 cache = {'X': None, 'y': None}
+
 
 def cached_model_predict(model, X):
     if not np.array_equal(cache['X'], X):
@@ -36,6 +36,7 @@ def find_elbow(x_values, y_values):
             idx = i
 
     return idx
+
 
 def load_set_info(path):
     SEP = '\t'

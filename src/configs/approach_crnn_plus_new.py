@@ -20,7 +20,8 @@ dataloader = CombinedLoader(
                               common.DEFAULT_PATH),
     ess_validate_path=prefix_path("accousticbrainz-validation.pickle",
                                   common.DEFAULT_PATH),
-    num_windows=5
+    window='random',
+    num_windows=5,
 )
 
 pipeline = Pipeline([("model", CRNNPlusModel(dataloader=dataloader))])

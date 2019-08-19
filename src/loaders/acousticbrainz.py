@@ -12,7 +12,11 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
     labels for both the training and test set.
     """
 
-    def __init__(self, training_path, test_path, validation_path, num_windows=1):
+    def __init__(self,
+                 training_path,
+                 test_path,
+                 validation_path,
+                 num_windows=1):
         self.training_path = training_path
         self.test_path = test_path
         self.validation_path = validation_path
