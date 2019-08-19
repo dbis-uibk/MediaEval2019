@@ -1,4 +1,6 @@
 import pickle
+import pandas as pd
+import numpy as np
 
 from dbispipeline.base import TrainValidateTestLoader
 from sklearn.preprocessing import MultiLabelBinarizer
@@ -10,10 +12,11 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
     labels for both the training and test set.
     """
 
-    def __init__(self, training_path, test_path, validation_path):
+    def __init__(self, training_path, test_path, validation_path, num_windows=1):
         self.training_path = training_path
         self.test_path = test_path
         self.validation_path = validation_path
+        self.num_windows = num_windows
 
         self.mlb = MultiLabelBinarizer()
         self.mlb_fitted = False
@@ -70,11 +73,17 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
         }
 
     def _load_set(self, set_path):
+        # Unpickle data.
         data = pickle.load(open(set_path, "rb"))
         data = data[self.columns]
 
-        X = data.drop(columns=['#ID', '#tags'])
-        y = data['#tags']
+        # Split features and labels.
+        X = data.drop(columns=['#ID', '#tags']).to_numpy()[:10]
+        y = data['#tags'].to_numpy()[:10]
+
+        # Duplicate data num_windows times.
+        X = np.repeat(X, repeats=self.num_windows, axis=0)
+        y = np.repeat(y, repeats=self.num_windows, axis=0)
 
         # TODO: Remove workaround
         if not self.mlb_fitted:
