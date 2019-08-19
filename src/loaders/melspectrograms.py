@@ -32,7 +32,7 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
         self.mlb_fit = True
 
     def _load_set(self, set_path, sub_sampling):
-        sample_set = utils.load_set_info(set_path)[['PATH', 'TAGS']].head(10)
+        sample_set = utils.load_set_info(set_path)[['PATH', 'TAGS']]
         X, y = self._load_data(sample_set, sub_sampling)
 
         # TODO: Remove workaround

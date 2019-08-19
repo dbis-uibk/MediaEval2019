@@ -78,8 +78,8 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
         data = data[self.columns]
 
         # Split features and labels.
-        X = data.drop(columns=['#ID', '#tags']).to_numpy()[:10]
-        y = data['#tags'].to_numpy()[:10]
+        X = data.drop(columns=['#ID', '#tags']).to_numpy()
+        y = data['#tags'].to_numpy()
 
         # Duplicate data num_windows times.
         X = np.repeat(X, repeats=self.num_windows, axis=0)
