@@ -1,8 +1,7 @@
 import pickle
-import pandas as pd
-import numpy as np
 
 from dbispipeline.base import TrainValidateTestLoader
+import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 
 

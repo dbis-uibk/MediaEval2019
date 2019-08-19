@@ -5,7 +5,6 @@ from tensorflow.keras.layers import (BatchNormalization, Concatenate, Conv2D,
                                      Dense, Dropout, ELU, GRU, Input,
                                      MaxPooling2D, Reshape, ZeroPadding2D)
 from tensorflow.keras.models import Model
-
 from utils import find_elbow
 
 

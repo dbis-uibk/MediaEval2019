@@ -1,5 +1,5 @@
-import numpy as np
 from dbispipeline.base import TrainValidateTestLoader
+import numpy as np
 
 from .acousticbrainz import AcousticBrainzLoader
 from .melspectrograms import MelSpectrogramsLoader
