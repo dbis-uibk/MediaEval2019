@@ -16,23 +16,19 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
                  epochs=100,
                  padding='same',
                  dataloader=None,
-                 output_dropout=0.3,
-                 window_size=1366):
+                 output_dropout=0.3):
         self.batch_size = batch_size
         self.epochs = epochs
         self.padding = padding
         self.dataloader = dataloader
         self.output_dropout = output_dropout
         self.network_input_width = 1440
-        if window_size > self.network_input_width:
-            raise ValueError('window_size > ' + str(self.network_input_width))
-        self.window_size = window_size
 
     def fit(self, X, y):
-        input_shape = (96, self.window_size, 1)
-        output_shape = y.shape[1]
+        input_shape, output_shape = self._data_shapes(X, y)
         self._create_model(input_shape, output_shape)
 
+        X = self._reshape_data(X)
         self.model.fit(X, y, batch_size=self.batch_size, epochs=self.epochs)
         cached_model_predict_clear()
 
@@ -48,6 +44,7 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
                 self.threshold(np.full(output_shape, .5))
 
     def validate(self, X, y):
+        X = self._reshape_data(X)
         y_pred = self.model.predict(X)
         threshold = []
         for label_idx in range(y_pred.shape[1]):
@@ -65,6 +62,14 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
                 threshold.append(0.5)
 
         self.threshold = np.array(threshold)
+
+    def _data_shapes(self, X, y):
+        if X.shape[2] > self.network_input_width:
+            raise ValueError('window_size > ' + str(self.network_input_width))
+        input_shape = (X.shape[1], X.shape[2], X.shape[3])
+        output_shape = y.shape[1]
+
+        return input_shape, output_shape
 
     def _create_model(self, input_shape, output_shape):
         melgram_input, output = self._crnn_layers(input_shape, output_shape)
@@ -133,11 +138,12 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         if self.output_dropout:
             hidden = Dropout(self.output_dropout)(hidden)
         output = Dense(output_shape, activation='sigmoid',
-                       name='output')(hidden)
+                       name='crnn_output')(hidden)
 
         return melgram_input, output
 
     def predict(self, X):
+        X = self._reshape_data(X)
         predictions = self.predict_proba(X)
         labels = np.greater(predictions, self.threshold)
 
@@ -145,3 +151,66 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
 
     def predict_proba(self, X):
         return cached_model_predict(self.model, X)
+
+    def _reshape_data(self, X):
+        return X
+
+
+class CRNNPlusModel(CRNNModel):
+
+    def __init__(self,
+                 batch_size=64,
+                 epochs=100,
+                 padding='same',
+                 dataloader=None,
+                 output_dropout=0.3,
+                 concat_bn=False):
+        super().__init__(batch_size=batch_size,
+                         epochs=epochs,
+                         padding=padding,
+                         dataloader=dataloader,
+                         output_dropout=output_dropout)
+        self.concat_bn = concat_bn
+
+    def _data_shapes(self, X, y):
+        X = np.swapaxes(X, 0, 1)
+        mel_shape = X[0][0].shape
+        ess_shape = X[1][0].shape
+
+        if mel_shape[1] > self.network_input_width:
+            raise ValueError('window_size > ' + str(self.network_input_width))
+
+        input_shape = (mel_shape, ess_shape)
+        output_shape = y.shape[1]
+
+        return input_shape, output_shape
+
+    def _reshape_data(self, X):
+        X = np.swapaxes(X, 0, 1)
+        num_samples = len(X[0])
+        mel_shape = X[0][0].shape
+        mel_X = np.vstack(X[0])
+        mel_X = mel_X.reshape((num_samples, *mel_shape))
+        ess_X = np.vstack(X[1])
+        return [mel_X, ess_X]
+
+    def _create_model(self, input_shape, output_shape):
+        print(input_shape)
+        mel_input, crnn_output = self._crnn_layers(input_shape[0],
+                                                   output_shape)
+        essentia_input = Input(shape=input_shape[1], dtype="float32")
+
+        concat = Concatenate()([crnn_output, essentia_input])
+        if self.concat_bn:
+            concat = BatchNormalization(axis=-1, name='concat_bn')(concat)
+
+        # Dense
+        dense = Dense(128, activation="tanh", name="dense")(concat)
+        output = Dense(output_shape, activation='sigmoid',
+                       name='output')(dense)
+
+        self.model = Model(inputs=[mel_input, essentia_input], outputs=output)
+        self.model.compile(optimizer="adam",
+                           loss="binary_crossentropy",
+                           metrics=['accuracy'])
+        self.model.summary()

@@ -22,7 +22,7 @@ dataloader = MelSpectrogramsLoader(
 )
 
 pipeline = Pipeline([
-    ("model", CRNNModel(dataloader=dataloader, window_size=WINDOW_SIZE)),
+    ("model", CRNNModel(dataloader=dataloader)),
 ])
 
 grid_params = common.grid_params()
