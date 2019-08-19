@@ -6,7 +6,7 @@ from tensorflow.keras.layers import (BatchNormalization, Concatenate, Conv2D,
                                      MaxPooling2D, Reshape, ZeroPadding2D)
 from tensorflow.keras.models import Model
 
-from .utils import find_elbow
+from utils import find_elbow
 
 
 class CRNNPlusModel(BaseEstimator, ClassifierMixin):

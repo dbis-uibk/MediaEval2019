@@ -4,7 +4,7 @@ from dbispipeline.base import TrainValidateTestLoader
 import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 
-from . import utils
+import utils
 
 
 class MelSpectrogramsLoader(TrainValidateTestLoader):

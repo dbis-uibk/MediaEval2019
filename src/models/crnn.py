@@ -6,7 +6,7 @@ from tensorflow.keras.layers import (BatchNormalization, Concatenate, Conv2D,
                                      MaxPooling2D, Reshape, ZeroPadding2D)
 from tensorflow.keras.models import Model
 
-from .utils import cached_model_predict, cached_model_predict_clear, find_elbow
+from utils import cached_model_predict, cached_model_predict_clear, find_elbow
 
 
 class CRNNModel(BaseEstimator, ClassifierMixin):
