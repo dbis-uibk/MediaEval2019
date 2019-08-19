@@ -142,13 +142,13 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         return melgram_input, output
 
     def predict(self, X):
-        X = self._reshape_data(X)
         predictions = self.predict_proba(X)
         labels = np.greater(predictions, self.threshold)
 
         return labels
 
     def predict_proba(self, X):
+        X = self._reshape_data(X)
         return cached_model_predict(self.model, X)
 
     def _reshape_data(self, X):
