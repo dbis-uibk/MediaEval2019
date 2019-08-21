@@ -16,8 +16,6 @@ dataloader = MelSpectrogramsLoader(
                           common.DEFAULT_PATH),
     validate_path=prefix_path("autotagging_moodtheme-validation.tsv",
                               common.DEFAULT_PATH),
-    window='sliding',
-    num_windows=5,
     window_size=WINDOW_SIZE,
 )
 
@@ -30,7 +28,7 @@ grid_params['n_jobs'] = 1
 
 evaluator = FixedSplitGridEvaluator(
     params={
-        "model__epochs": [32],
+        "model__epochs": [2],
         "model__output_dropout": [None],
     },
     grid_params=grid_params,
