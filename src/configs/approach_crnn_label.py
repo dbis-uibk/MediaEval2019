@@ -53,7 +53,7 @@ evaluator = FixedSplitEvaluator(
         'roc_auc_all':
             make_scorer(roc_auc_score, average=None),
         'confusion_matrix':
-            make_scorer(multilabel_confusion_matrix, average=None),
+            make_scorer(multilabel_confusion_matrix),
     })
 
 result_handlers = [
