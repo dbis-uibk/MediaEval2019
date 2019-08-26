@@ -100,4 +100,5 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
             'window': self.window,
             'window_size': self.window_size,
             'num_windows': self.num_windows,
+            'classes': self.mlb.classes_,
         }
