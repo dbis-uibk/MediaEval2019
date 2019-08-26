@@ -11,12 +11,8 @@ def grid_params():
                 make_scorer(f1_score, average='micro'),
             'f1_macro':
                 make_scorer(f1_score, average='macro'),
-            'roc_auc_all':
-                make_scorer(roc_auc_score, average=None),
             'roc_auc':
                 make_scorer(roc_auc_score, average='macro'),
-            'average_precision_all':
-                make_scorer(average_precision_score, average=None),
             'average_precision':
                 make_scorer(average_precision_score, average='macro'),
             'precision_micro':
