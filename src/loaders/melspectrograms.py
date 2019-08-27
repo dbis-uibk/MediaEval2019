@@ -92,6 +92,10 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
 
         This is for storing its state in the database.
         """
+        if isinstance(self.mlb.classes_, np.ndarray):
+            classes = self.mlb.classes_.tolist()
+        else:
+            classes = self.mlb.classes_
         return {
             'training_path': self.training_path,
             'validate_path': self.validate_path,
@@ -100,5 +104,5 @@ class MelSpectrogramsLoader(TrainValidateTestLoader):
             'window': self.window,
             'window_size': self.window_size,
             'num_windows': self.num_windows,
-            'classes': self.mlb.classes_,
+            'classes': classes,
         }
