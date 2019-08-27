@@ -20,6 +20,8 @@ dataloader = CombinedLoader(
                               common.DEFAULT_PATH),
     ess_validate_path=prefix_path("accousticbrainz-validation.pickle",
                                   common.DEFAULT_PATH),
+    window='random',
+    num_windows=5,
 )
 
 pipeline = Pipeline([("model", CRNNPlusModel(dataloader=dataloader))])
@@ -29,8 +31,8 @@ grid_params['n_jobs'] = 1
 
 evaluator = FixedSplitGridEvaluator(
     params={
-        "model__epochs": [2, 4, 8, 16, 32],
-        "model__output_dropout": [None],
+        "model__epochs": [8, 16, 32],
+        "model__output_dropout": [0.3],
         "model__concat_bn": [True],
     },
     grid_params=grid_params,
