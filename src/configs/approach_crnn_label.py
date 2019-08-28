@@ -27,7 +27,7 @@ dataloader = MelSpectrogramsLoader(
 )
 
 pipeline = Pipeline([
-    ("model", CRNNModel(epochs=1, dataloader=dataloader)),
+    ("model", CRNNModel(epochs=16, dataloader=dataloader)),
 ])
 
 evaluator = FixedSplitEvaluator(
