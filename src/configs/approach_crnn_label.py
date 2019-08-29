@@ -17,6 +17,8 @@ dataloader = MelSpectrogramsLoader(
     validate_path=prefix_path("autotagging_moodtheme-validation.tsv",
                               common.DEFAULT_PATH),
     window_size=WINDOW_SIZE,
+    window='random',
+    num_windows=5,
 )
 
 pipeline = Pipeline([
