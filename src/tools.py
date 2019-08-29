@@ -141,7 +141,10 @@ def plot_per_label(database_id):
         recall_all,
         f1_all,
     )
-    labels = _strip_labels(row.dataloader['classes'])
+    try:
+        labels = _strip_labels(row.dataloader['classes'])
+    except KeyError:
+        labels = None
     data = pd.DataFrame(
         data,
         index=labels,
