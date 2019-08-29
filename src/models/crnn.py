@@ -1,9 +1,24 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import roc_curve
-from tensorflow.keras.layers import (BatchNormalization, Concatenate, Conv2D,
-                                     Dense, Dropout, ELU, GRU, Input,
-                                     MaxPooling2D, Reshape, ZeroPadding2D)
+import tensorflow.compat.v2.keras.backend as K
+from tensorflow.keras.layers import Activation
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import Concatenate
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import ELU
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.layers import GRU
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Lambda
+from tensorflow.keras.layers import MaxPooling2D
+from tensorflow.keras.layers import Multiply
+from tensorflow.keras.layers import Permute
+from tensorflow.keras.layers import RepeatVector
+from tensorflow.keras.layers import Reshape
+from tensorflow.keras.layers import ZeroPadding2D
 from tensorflow.keras.models import Model
 from utils import cached_model_predict, cached_model_predict_clear, find_elbow
 
@@ -15,13 +30,15 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
                  epochs=100,
                  padding='same',
                  dataloader=None,
-                 output_dropout=0.3):
+                 output_dropout=0.3,
+                 attention=False):
         self.batch_size = batch_size
         self.epochs = epochs
         self.padding = padding
         self.dataloader = dataloader
         self.output_dropout = output_dropout
         self.network_input_width = 1440
+        self.attention = attention
 
     def fit(self, X, y):
         X = self._reshape_data(X)
@@ -132,8 +149,21 @@ class CRNNModel(BaseEstimator, ClassifierMixin):
         hidden = Reshape((15, 128))(hidden)
 
         # GRU block 1, 2, output
-        hidden = GRU(32, return_sequences=True, name='gru1')(hidden)
-        hidden = GRU(32, return_sequences=False, name='gru2')(hidden)
+        embed_size = 32
+        hidden = GRU(embed_size, return_sequences=True, name='gru1')(hidden)
+        hidden = GRU(embed_size, return_sequences=self.attention,
+                     name='gru2')(hidden)
+
+        if self.attention:
+            attention = Dense(1)(hidden)
+            attention = Flatten()(attention)
+            attention_act = Activation("softmax")(attention)
+            attention = RepeatVector(embed_size)(attention_act)
+            attention = Permute((2, 1))(attention)
+
+            merged = Multiply()([hidden, attention])
+            hidden = Lambda(lambda xin: K.sum(xin, axis=1))(merged)
+
         if self.output_dropout:
             hidden = Dropout(self.output_dropout)(hidden)
         output = Dense(output_shape, activation='sigmoid',
