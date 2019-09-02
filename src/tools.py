@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from tabulate import tabulate
 
 
 def print_confusion_matrix(confusion_matrix,
@@ -151,6 +152,55 @@ def plot_per_label(database_id):
         columns=['roc-auc', 'pr-auc', 'accuracy', 'precision', 'recall', 'f1'])
     print_per_label(data)
     plt.show()
+
+
+@cli.command()
+def plot_result_table():
+    session = DB.session()
+    results = pd.DataFrame()
+    for row in session.query(DbModel):
+        entry = {
+            'id': row.id,
+            'project_name': row.project_name,
+            'model': row.pipeline['model'],
+        }
+
+        try:
+            cv_results = row.outcome['cv_results']
+            scores = {
+                k: v
+                for k, v in cv_results.items()
+                if k.startswith('mean_test_')
+            }
+            df = pd.DataFrame(scores)
+            df = df.rename(columns=lambda key: key[10:])
+            df['id'] = pd.Series(row.id, index=df.index)
+            df['parameters'] = [cv_results['params'][i] for i in df.index]
+            df['row_key'] = df.index
+            entry = pd.DataFrame([entry])
+            results = results.append(entry.join(df.set_index('id'), on='id'),
+                                     ignore_index=True,
+                                     sort=False)
+        except KeyError:
+            entry = pd.DataFrame([{
+                **entry,
+                **row.outcome,
+            }])
+            results = results.append(entry, ignore_index=True, sort=False)
+
+    select = [
+        'id',
+        'project_name',
+        'model',
+        'row_key',
+        'parameters',
+        'roc_auc',
+        'average_precision',
+        'f1_micro',
+        'f1_macro',
+    ]
+    print(results.columns)
+    print(tabulate(results[select], headers='keys', tablefmt='psql'))
 
 
 def _get_db_entry(database_id):
