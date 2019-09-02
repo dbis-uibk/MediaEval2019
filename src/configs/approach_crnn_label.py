@@ -23,9 +23,9 @@ dataloader = MelSpectrogramsLoader(
 
 pipeline = Pipeline([
     ("model",
-     CRNNModel(epochs=16,
+     CRNNModel(epochs=32,
                dataloader=dataloader,
-               output_dropout=0,
+               output_dropout=None,
                attention=True)),
 ])
 
