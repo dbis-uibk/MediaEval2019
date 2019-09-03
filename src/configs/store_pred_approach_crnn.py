@@ -30,13 +30,15 @@ dataloader = MelSpectrogramsLoader(
     window_size=WINDOW_SIZE,
 )
 
+epochs = 16
+
 pipeline = Pipeline([
-    ("model", CRNNModel(epochs=1, dataloader=dataloader)),
+    ("model", CRNNModel(epochs=epochs, dataloader=dataloader)),
 ])
 
 evaluator = ModelCallbackWrapper(
     FixedSplitEvaluator(**common.fixed_split_params()),
-    lambda model: store_prediction(model, dataloader, 'crnn'),
+    lambda model: store_prediction(model, dataloader, 'crnn_' + str(epochs)),
 )
 
 result_handlers = [

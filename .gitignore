@@ -126,3 +126,6 @@ dmypy.json
 # slurm ignore
 slurm.*.out
 slurm.*.err
+
+# stored numpy files
+*.npy
