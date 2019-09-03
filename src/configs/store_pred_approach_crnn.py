@@ -11,10 +11,12 @@ from sklearn.pipeline import Pipeline
 WINDOW_SIZE = 1366
 
 
-def store_prediction(model, dataloader, file_name):
+def store_prediction(model, dataloader, file_name_prefix):
     x_test, _ = dataloader.load_test()
     y_pred = model.predict(x_test)
-    np.save(file_name, y_pred)
+    np.save(file_name_prefix + '_decisions.npy', y_pred.astype(bool))
+    y_pred = model.predict_proba(x_test)
+    np.save(file_name_prefix + '_predictions.npy', y_pred.astype(np.float64))
 
 
 dataloader = MelSpectrogramsLoader(
@@ -34,7 +36,8 @@ pipeline = Pipeline([
 
 evaluator = ModelCallbackWrapper(
     FixedSplitEvaluator(**common.fixed_split_params()),
-    lambda model: store_prediction(model, dataloader, 'test.npy'))
+    lambda model: store_prediction(model, dataloader, 'crnn'),
+)
 
 result_handlers = [
     result_handlers.print_gridsearch_results,
