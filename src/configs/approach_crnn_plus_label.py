@@ -6,7 +6,6 @@ from loaders.combined import CombinedLoader
 from models.crnn import CRNNPlusModel
 from sklearn.pipeline import Pipeline
 
-
 dataloader = CombinedLoader(
     mel_data_path=prefix_path("melspec_data", common.DEFAULT_PATH),
     mel_training_path=prefix_path("autotagging_moodtheme-train.tsv",
