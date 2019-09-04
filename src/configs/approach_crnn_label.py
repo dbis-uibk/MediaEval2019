@@ -18,7 +18,7 @@ dataloader = MelSpectrogramsLoader(
                               common.DEFAULT_PATH),
     window_size=WINDOW_SIZE,
     window='random',
-    num_window=5,
+    num_windows=5,
 )
 
 pipeline = Pipeline([
