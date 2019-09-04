@@ -49,7 +49,6 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
             "highlevel.timbre.all.bright",
             "highlevel.timbre.all.dark",
             "highlevel.tonal_atonal.all.tonal",
-            "rhythm.bpm",
         ]
 
     def load_train(self):

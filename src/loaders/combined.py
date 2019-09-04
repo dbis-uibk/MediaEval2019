@@ -60,4 +60,5 @@ class CombinedLoader(TrainValidateTestLoader):
         return {
             'melspectrogram_loader': self.mel_loader.configuration,
             'essentia_loader': self.ess_loader.configuration,
+            'classes': self.mel_loader.configuration['classes'],
         }
