@@ -17,10 +17,12 @@ dataloader = MelSpectrogramsLoader(
     validate_path=prefix_path("autotagging_moodtheme-validation.tsv",
                               common.DEFAULT_PATH),
     window_size=WINDOW_SIZE,
+    window='random',
+    num_window=5,
 )
 
 pipeline = Pipeline([
-    ("model", CRNNModel(epochs=8, dataloader=dataloader)),
+    ("model", CRNNModel(epochs=16, dataloader=dataloader, attention=True)),
 ])
 
 evaluator = FixedSplitEvaluator(**common.fixed_split_params())
