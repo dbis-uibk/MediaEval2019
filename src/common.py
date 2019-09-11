@@ -17,9 +17,11 @@ def grid_params():
             'f1_macro':
                 make_scorer(f1_score, average='macro'),
             'roc_auc':
-                make_scorer(roc_auc_score, average='macro'),
+                make_scorer(roc_auc_score, average='macro', needs_proba=True),
             'average_precision':
-                make_scorer(average_precision_score, average='macro'),
+                make_scorer(average_precision_score,
+                            average='macro',
+                            needs_proba=True),
             'precision_micro':
                 make_scorer(precision_score, average='micro'),
             'precision_macro':
@@ -44,9 +46,11 @@ def fixed_split_params():
             'f1_macro':
                 make_scorer(f1_score, average='macro'),
             'roc_auc':
-                make_scorer(roc_auc_score, average='macro'),
+                make_scorer(roc_auc_score, average='macro', needs_proba=True),
             'average_precision':
-                make_scorer(average_precision_score, average='macro'),
+                make_scorer(average_precision_score,
+                            average='macro',
+                            needs_proba=True),
             'precision_micro':
                 make_scorer(precision_score, average='micro'),
             'precision_macro':
@@ -56,9 +60,11 @@ def fixed_split_params():
             'recall_macro':
                 make_scorer(recall_score, average='macro'),
             'average_precision_all':
-                make_scorer(average_precision_score, average=None),
+                make_scorer(average_precision_score,
+                            average=None,
+                            needs_proba=True),
             'roc_auc_all':
-                make_scorer(roc_auc_score, average=None),
+                make_scorer(roc_auc_score, average=None, needs_proba=True),
             'confusion_matrix':
                 make_scorer(multilabel_confusion_matrix),
         },
