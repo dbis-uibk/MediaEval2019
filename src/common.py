@@ -1,3 +1,6 @@
+from os.path import basename
+from os.path import splitext
+
 from dbispipeline import store
 import numpy as np
 from sklearn.metrics import average_precision_score
@@ -80,7 +83,7 @@ def store_prediction(model, dataloader, file_name_prefix=None):
         file_name_prefix += '_'
 
     if store['config_path']:
-        file_name_prefix += store['config_path']
+        file_name_prefix += splitext(basename(store['config_path']))[0]
 
     x_test, _ = dataloader.load_test()
     y_pred = model.predict(x_test)
