@@ -193,12 +193,14 @@ class CRNNPlusModel(CRNNModel):
                  padding='same',
                  dataloader=None,
                  output_dropout=0.3,
-                 concat_bn=False):
+                 concat_bn=False,
+                 attention=False):
         super().__init__(batch_size=batch_size,
                          epochs=epochs,
                          padding=padding,
                          dataloader=dataloader,
-                         output_dropout=output_dropout)
+                         output_dropout=output_dropout,
+                         attention=attention)
         self.concat_bn = concat_bn
 
     def _data_shapes(self, X, y):
