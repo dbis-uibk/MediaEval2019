@@ -1,3 +1,5 @@
+from dbispipeline import store
+import numpy as np
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import make_scorer
@@ -69,3 +71,19 @@ def fixed_split_params():
                 make_scorer(multilabel_confusion_matrix),
         },
     }
+
+
+def store_prediction(model, dataloader, file_name_prefix=None):
+    if not file_name_prefix:
+        file_name_prefix = type(model).__name__
+    elif file_name_prefix[-1] != '_':
+        file_name_prefix += '_'
+
+    if store['config_path']:
+        file_name_prefix += store['config_path']
+
+    x_test, _ = dataloader.load_test()
+    y_pred = model.predict(x_test)
+    np.save(file_name_prefix + '_decisions.npy', y_pred.astype(bool))
+    y_pred = model.predict_proba(x_test)
+    np.save(file_name_prefix + '_predictions.npy', y_pred.astype(np.float64))

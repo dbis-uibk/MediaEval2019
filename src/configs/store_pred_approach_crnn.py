@@ -5,19 +5,9 @@ import dbispipeline.result_handlers as result_handlers
 from dbispipeline.utils import prefix_path
 from loaders.melspectrograms import MelSpectrogramsLoader
 from models.crnn import CRNNModel
-import numpy as np
 from sklearn.pipeline import Pipeline
 
 WINDOW_SIZE = 1366
-
-
-def store_prediction(model, dataloader, file_name_prefix):
-    x_test, _ = dataloader.load_test()
-    y_pred = model.predict(x_test)
-    np.save(file_name_prefix + '_decisions.npy', y_pred.astype(bool))
-    y_pred = model.predict_proba(x_test)
-    np.save(file_name_prefix + '_predictions.npy', y_pred.astype(np.float64))
-
 
 dataloader = MelSpectrogramsLoader(
     data_path=prefix_path("melspec_data", common.DEFAULT_PATH),
@@ -30,15 +20,16 @@ dataloader = MelSpectrogramsLoader(
     window_size=WINDOW_SIZE,
 )
 
-epochs = 16
+EPOCHS = 1
+FILE_PREFIX = 'crnn_' + str(EPOCHS)
 
 pipeline = Pipeline([
-    ("model", CRNNModel(epochs=epochs, dataloader=dataloader)),
+    ("model", CRNNModel(epochs=EPOCHS, dataloader=dataloader)),
 ])
 
 evaluator = ModelCallbackWrapper(
     FixedSplitEvaluator(**common.fixed_split_params()),
-    lambda model: store_prediction(model, dataloader, 'crnn_' + str(epochs)),
+    lambda model: common.store_prediction(model, dataloader, FILE_PREFIX),
 )
 
 result_handlers = [
