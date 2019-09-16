@@ -228,7 +228,7 @@ class CRNNPlusModel(CRNNModel):
             concat = BatchNormalization(axis=-1, name='concat_bn')(concat)
 
         # Dense
-        dense = Dense(128, activation="tanh", name="dense")(concat)
+        dense = Dense(128, activation="tanh", name="dense_10")(concat)
         output = Dense(output_shape, activation='sigmoid',
                        name='output')(dense)
 
