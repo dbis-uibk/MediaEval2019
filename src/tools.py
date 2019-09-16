@@ -155,7 +155,13 @@ def plot_per_label(database_id):
 
 
 @cli.command()
-def plot_result_table():
+@click.option(
+    '--sourcefile',
+    default=False,
+    is_flag=True,
+    help='Displays the source file name instead of the parameters.',
+)
+def plot_result_table(sourcefile):
     session = DB.session()
     results = pd.DataFrame()
     for row in session.query(DbModel):
@@ -163,6 +169,7 @@ def plot_result_table():
             'id': row.id,
             'project_name': row.project_name,
             'model': row.pipeline['model'],
+            'sourcefile': row.sourcefile,
         }
 
         try:
@@ -199,6 +206,9 @@ def plot_result_table():
         'f1_micro',
         'f1_macro',
     ]
+
+    if sourcefile:
+        select[select.index('parameters')] = 'sourcefile'
     print(results.columns)
     print(tabulate(results[select], headers='keys', tablefmt='psql'))
 
