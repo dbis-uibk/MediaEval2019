@@ -15,7 +15,7 @@ bandit = "*"
 pylint = "*"
 
 [packages]
-dbispipeline = {git = "ssh://git@git.uibk.ac.at/dbis/software/dbispipeline"}
+dbispipeline = {git = "https://git.uibk.ac.at/dbis/software/dbispipeline"}
 librosa = "*"
 tensorflow = "==1.14.0"
 click = "*"
