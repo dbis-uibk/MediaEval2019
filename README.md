@@ -10,7 +10,7 @@ five submitted runs.  The according source code can be found in the `src`
 folder and is under BSD-2-Clause license.
 
 ## Examples
-Setup the pipenv defined in the `src` folder using `pipenv sync` and then run:
+Setup the pipenv defined in the `src` folder using `pipenv install` and then run:
 ```
 pipenv run python -m dbispipeline configs/crnn_16.py --path=$HOME/mediaeval2019_data
 ```
